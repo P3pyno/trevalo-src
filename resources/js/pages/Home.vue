@@ -171,6 +171,58 @@
     </div>
   </section>
 
+  <!-- Testimonials -->
+  <section class="bg-white py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">Client Stories</div>
+        <h2 class="section-title">What Our Clients Say</h2>
+        <p class="section-subtitle mx-auto">Businesses from around the world trust Trivalo Sourcing to connect them with reliable Chinese manufacturers.</p>
+      </div>
+    </div>
+
+    <!-- Full-width marquee wrapper — overflow clipped here -->
+    <div class="relative overflow-hidden">
+      <!-- Gradient edges -->
+      <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent pointer-events-none z-10"></div>
+      <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent pointer-events-none z-10"></div>
+
+      <!-- Row 1 -->
+      <div class="flex gap-6 testimonial-marquee">
+        <div v-for="t in [...testimonials, ...testimonials]" :key="t.id + t.name" class="flex-shrink-0 w-80 bg-gray-50 border border-gray-100 rounded-2xl p-6 hover:border-gold-200 hover:shadow-md transition-all duration-300">
+          <div class="flex gap-1 mb-4">
+            <svg v-for="i in 5" :key="i" class="w-4 h-4 text-gold-400 fill-gold-400" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+          </div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">"{{ t.quote }}"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-gold-400 font-bold text-sm flex-shrink-0">{{ t.initials }}</div>
+            <div>
+              <div class="font-semibold text-navy-700 text-sm">{{ t.name }}</div>
+              <div class="text-gray-400 text-xs">{{ t.role }} · {{ t.country }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2 (reverse) -->
+      <div class="flex gap-6 testimonial-marquee-reverse mt-6">
+        <div v-for="t in [...testimonialsRow2, ...testimonialsRow2]" :key="t.id + t.name" class="flex-shrink-0 w-80 bg-gray-50 border border-gray-100 rounded-2xl p-6 hover:border-gold-200 hover:shadow-md transition-all duration-300">
+          <div class="flex gap-1 mb-4">
+            <svg v-for="i in 5" :key="i" class="w-4 h-4 text-gold-400 fill-gold-400" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+          </div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-5">"{{ t.quote }}"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-gold-400 font-bold text-sm flex-shrink-0">{{ t.initials }}</div>
+            <div>
+              <div class="font-semibold text-navy-700 text-sm">{{ t.name }}</div>
+              <div class="text-gray-400 text-xs">{{ t.role }} · {{ t.country }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA Banner -->
   <section class="bg-navy-700 py-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -235,4 +287,59 @@ const steps = [
   { titleKey: 'how.step3_title', descKey: 'how.step3_desc' },
   { titleKey: 'how.step4_title', descKey: 'how.step4_desc' },
 ]
+
+const testimonials = [
+  {
+    id: 1, name: 'Marcus Levi', initials: 'ML', role: 'E-commerce Founder', country: 'Germany',
+    quote: 'Trivalo found us three verified suppliers in under a week. The factory audit report gave us complete confidence before placing our first order. We\'ve since scaled to monthly containers.'
+  },
+  {
+    id: 2, name: 'Sophie Martin', initials: 'SM', role: 'Purchasing Manager', country: 'France',
+    quote: 'The quality inspection service is exceptional. They caught packaging defects before shipment that would have been a disaster. I now rely on them for every single order.'
+  },
+  {
+    id: 3, name: 'Ahmed Al-Rashid', initials: 'AR', role: 'Import Director', country: 'UAE',
+    quote: 'Sea freight from Guangzhou to Dubai was seamless. All customs paperwork was handled perfectly and the goods arrived on time. Trivalo takes real ownership of the process.'
+  },
+]
+
+const testimonialsRow2 = [
+  {
+    id: 4, name: 'James Thornton', initials: 'JT', role: 'Brand Owner', country: 'United Kingdom',
+    quote: 'We launched our private label line entirely through Trivalo. From packaging design coordination to final delivery, they managed every detail. Our margins are 30% better than before.'
+  },
+  {
+    id: 5, name: 'Maria Santos', initials: 'MS', role: 'Retail Buyer', country: 'Brazil',
+    quote: 'As a first-time importer, I was nervous about dealing with Chinese factories directly. Trivalo acted as a true partner — transparent, responsive, and honest about timelines.'
+  },
+  {
+    id: 6, name: 'David Park', initials: 'DP', role: 'Operations Manager', country: 'United States',
+    quote: 'The supplier verification process is thorough. We had a bad experience with another agent before Trivalo. Now we have long-term partnerships with two factories they introduced us to.'
+  },
+]
 </script>
+
+<style scoped>
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.testimonial-marquee {
+  animation: marquee 40s linear infinite;
+  width: max-content;
+}
+.testimonial-marquee:hover {
+  animation-play-state: paused;
+}
+.testimonial-marquee-reverse {
+  animation: marquee-reverse 40s linear infinite;
+  width: max-content;
+}
+.testimonial-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+</style>

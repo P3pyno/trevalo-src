@@ -37,6 +37,24 @@ const routes = [
     component: () => import('@/pages/Auth.vue'),
     meta: { title: 'Sign In — Trivalo Sourcing', hideLayout: true },
   },
+  {
+    path: '/quote',
+    name: 'quote',
+    component: () => import('@/pages/Quote.vue'),
+    meta: { title: 'Get a Quote — Trivalo Sourcing' },
+  },
+  {
+    path: '/privacy',
+    name: 'privacy',
+    component: () => import('@/pages/Privacy.vue'),
+    meta: { title: 'Privacy Policy — Trivalo Sourcing' },
+  },
+  {
+    path: '/terms',
+    name: 'terms',
+    component: () => import('@/pages/Terms.vue'),
+    meta: { title: 'Terms of Service — Trivalo Sourcing' },
+  },
 ]
 
 const router = createRouter({

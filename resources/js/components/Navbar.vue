@@ -32,7 +32,7 @@
           >
             Sign In
           </RouterLink>
-          <RouterLink to="/contact" class="btn-primary text-sm">
+          <RouterLink to="/quote" class="btn-primary text-sm">
             {{ $t('nav.get_quote') }}
           </RouterLink>
         </div>

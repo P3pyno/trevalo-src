@@ -226,5 +226,5 @@ import { useContactStore } from '@/stores/contact'
 
 const contactStore = useContactStore()
 const wechatVisible = ref(false)
-const whatsappNumber = '8612345678900'  // placeholder
+const whatsappNumber = '8615019253764'
 </script>

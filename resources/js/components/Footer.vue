@@ -71,7 +71,11 @@
 
       <div class="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3">
         <p class="text-gray-500 text-sm">{{ $t('footer.copyright') }}</p>
-        <p class="text-gray-500 text-xs">Based in China · Serving the World</p>
+        <div class="flex items-center gap-4">
+          <RouterLink to="/privacy" class="text-gray-500 hover:text-gray-300 text-xs transition-colors">Privacy Policy</RouterLink>
+          <RouterLink to="/terms" class="text-gray-500 hover:text-gray-300 text-xs transition-colors">Terms of Service</RouterLink>
+          <p class="text-gray-500 text-xs">Based in China · Serving the World</p>
+        </div>
       </div>
     </div>
 
@@ -110,7 +114,7 @@ import { ref } from 'vue'
 import AppLogo from './AppLogo.vue'
 
 const wechatVisible = ref(false)
-const whatsappNumber = '8612345678900'  // placeholder — replace with real number
+const whatsappNumber = '8615019253764'
 
 const navLinks = [
   { key: 'nav.home',         path: '/' },

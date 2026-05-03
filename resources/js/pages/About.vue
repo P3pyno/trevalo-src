@@ -108,6 +108,57 @@
     </div>
   </section>
 
+  <!-- Team -->
+  <section class="bg-gray-50 py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">The People Behind It</div>
+        <h2 class="section-title">Meet Our Team</h2>
+        <p class="section-subtitle mx-auto">International entrepreneurs who chose to build from China — bridging cultures, languages, and supply chains.</p>
+      </div>
+
+      <div class="flex justify-center">
+        <div class="bg-white rounded-3xl p-10 shadow-sm border border-gray-100 max-w-sm w-full text-center hover:shadow-md transition-shadow duration-300">
+          <!-- Avatar -->
+          <div class="relative inline-block mb-6">
+            <div class="w-32 h-32 rounded-full overflow-hidden mx-auto border-4 border-gold-200 shadow-lg">
+              <img
+                src="https://api.dicebear.com/8.x/lorelei/svg?seed=RedaDahmouch&backgroundColor=0D1B4B&scale=90"
+                alt="Reda Dahmouch"
+                class="w-full h-full object-cover bg-navy-700"
+              >
+            </div>
+            <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-gold-400 rounded-full flex items-center justify-center shadow">
+              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-bold text-navy-700">Reda Dahmouch</h3>
+          <div class="text-gold-500 font-semibold text-sm mt-1">Founder & CEO</div>
+          <div class="text-gray-400 text-xs mt-1">MSc International Trade & Business</div>
+
+          <p class="text-gray-500 text-sm leading-relaxed mt-5">
+            With a master's degree in international trade and years of hands-on experience navigating China's manufacturing landscape, Reda founded Trivalo Sourcing to give global businesses the reliable, transparent partner he wished he'd had.
+          </p>
+
+          <div class="flex justify-center gap-3 mt-6">
+            <span class="inline-flex items-center gap-1.5 bg-navy-50 text-navy-700 text-xs font-medium px-3 py-1.5 rounded-full">
+              <span>🇫🇷</span> French
+            </span>
+            <span class="inline-flex items-center gap-1.5 bg-navy-50 text-navy-700 text-xs font-medium px-3 py-1.5 rounded-full">
+              <span>🇬🇧</span> English
+            </span>
+            <span class="inline-flex items-center gap-1.5 bg-navy-50 text-navy-700 text-xs font-medium px-3 py-1.5 rounded-full">
+              <span>🇨🇳</span> Mandarin
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="bg-navy-700 py-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

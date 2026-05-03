@@ -1,0 +1,103 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "how_it_works": "How It Works",
+    "contact": "Contact",
+    "get_quote": "Get a Quote"
+  },
+  "hero": {
+    "badge": "China-Based · Globally Trusted",
+    "title": "Your Gateway to Global Sourcing",
+    "subtitle": "Trivalo Sourcing connects international businesses with verified Chinese manufacturers — from product discovery to door-to-door delivery.",
+    "cta_primary": "Start Sourcing",
+    "cta_secondary": "Discover Services"
+  },
+  "stats": {
+    "suppliers": "Verified Suppliers",
+    "countries": "Countries Served",
+    "experience": "Years Experience",
+    "satisfaction": "Client Satisfaction"
+  },
+  "services": {
+    "title": "Everything You Need, Under One Roof",
+    "subtitle": "From finding the right manufacturer to shipping goods to your door, we manage the entire process so you don't have to.",
+    "sourcing_title": "Product Sourcing",
+    "sourcing_desc": "We identify and shortlist the best manufacturers for your specific product requirements and budget.",
+    "verification_title": "Supplier Verification",
+    "verification_desc": "Thorough background checks, factory audits, and certifications review to protect your supply chain.",
+    "quality_title": "Quality Control",
+    "quality_desc": "On-site inspectors at every stage ensure your goods meet exact specifications before they ship.",
+    "shipping_title": "Shipping & Logistics",
+    "shipping_desc": "Full freight management by sea, air, or express — from factory gate to your warehouse."
+  },
+  "why": {
+    "title": "Why Choose Trivalo Sourcing?",
+    "subtitle": "We combine on-the-ground presence in China with international standards and transparent practices.",
+    "local_title": "China-Based, Globally Minded",
+    "local_desc": "Our team lives and works in China, giving you access to insights and relationships no remote agency can offer.",
+    "multilingual_title": "Multilingual Team",
+    "multilingual_desc": "We communicate fluently in English, Chinese, French, and Arabic — no language barriers, ever.",
+    "transparent_title": "Transparent Pricing",
+    "transparent_desc": "No hidden commissions from suppliers. Clear, flat-fee pricing on every engagement.",
+    "endtoend_title": "End-to-End Service",
+    "endtoend_desc": "From first inquiry to delivery, we are your single point of contact for the entire supply chain."
+  },
+  "how": {
+    "title": "How It Works",
+    "subtitle": "A simple, proven four-step process to get your products from China to your door.",
+    "step1_title": "Share Your Requirements",
+    "step1_desc": "Tell us what you need — product specs, quantity, target price, and timeline.",
+    "step2_title": "We Source & Verify",
+    "step2_desc": "We research, audit, and shortlist the best-fit suppliers and present you with options.",
+    "step3_title": "Quality Inspection",
+    "step3_desc": "We inspect samples and production batches on-site to ensure compliance with your standards.",
+    "step4_title": "Ship & Deliver",
+    "step4_desc": "We arrange freight, handle documentation, and track your shipment until it reaches you."
+  },
+  "cta": {
+    "title": "Ready to Source Smarter?",
+    "subtitle": "Get a free consultation with our team. No commitment, no cost.",
+    "button": "Get Started Today"
+  },
+  "about": {
+    "title": "About Trivalo Sourcing",
+    "subtitle": "Foreign-owned, China-based, globally focused.",
+    "story_title": "Our Story",
+    "story_body": "Trivalo Sourcing was founded by international entrepreneurs who saw firsthand how difficult it was for foreign businesses to navigate China's manufacturing landscape — language barriers, lack of transparency, unreliable middlemen, and quality inconsistencies.\n\nWe built Trivalo to be the partner we wished we had: a team that is physically present in China, speaks the language, understands the culture, and holds itself to international standards of transparency and professionalism.",
+    "mission_title": "Our Mission",
+    "mission_body": "To make global sourcing from China simple, transparent, and reliable for businesses of all sizes — regardless of where they are in the world.",
+    "vision_title": "Our Vision",
+    "vision_body": "A world where any entrepreneur or company can access China's manufacturing excellence without friction, risk, or language barriers.",
+    "values_title": "Our Core Values",
+    "val1_title": "Transparency",
+    "val1_desc": "We share everything — supplier details, costs, inspection reports. No black boxes.",
+    "val2_title": "Reliability",
+    "val2_desc": "We deliver on our commitments. If something goes wrong, we own it and fix it.",
+    "val3_title": "Excellence",
+    "val3_desc": "We hold our suppliers and ourselves to the highest quality standards on every project.",
+    "val4_title": "Partnership",
+    "val4_desc": "We think long-term. Your success is our success — we invest in relationships, not transactions."
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Have a project in mind? Tell us about it and we'll get back to you within 24 hours.",
+    "form_name": "Full Name",
+    "form_email": "Email Address",
+    "form_company": "Company Name",
+    "form_phone": "Phone / WhatsApp",
+    "form_message": "Your Message",
+    "form_placeholder": "Tell us about your product, requirements, or any questions you have...",
+    "form_send": "Send Message",
+    "form_sending": "Sending...",
+    "form_success": "Message sent! We'll be in touch within 24 hours.",
+    "channel_email": "Email Us",
+    "channel_whatsapp": "WhatsApp",
+    "channel_wechat": "WeChat"
+  },
+  "footer": {
+    "tagline": "Bridging global businesses with China's best manufacturers.",
+    "copyright": "© 2024 Trivalo Sourcing. All rights reserved."
+  }
+}

@@ -413,57 +413,86 @@
         </section>
 
         <!-- ── Documents ─────────────────────────────────────────── -->
-        <section v-else-if="activeSection === 'documents'" class="space-y-5">
-          <div class="flex items-center justify-between">
-            <div class="flex gap-2">
-              <button v-for="s in [['all','All'],['contract','Contracts'],['license','Licenses'],['other','Other']]" :key="s[0]"
-                @click="adminDocSection = s[0]"
-                class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
-                :class="adminDocSection === s[0] ? 'bg-navy-700 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-navy-300'">
-                {{ s[1] }}
-                <span v-if="s[0] !== 'all'" class="ml-1 opacity-70">({{ adminDocsBySection(s[0]).length }})</span>
+        <section v-else-if="activeSection === 'documents'" class="flex gap-6 h-full -m-8">
+          <!-- Request search panel -->
+          <div class="w-80 bg-white border-r border-gray-100 flex flex-col flex-shrink-0">
+            <div class="px-6 py-4 border-b border-gray-100">
+              <h3 class="text-sm font-semibold text-navy-700 mb-3">Find by Product or Company</h3>
+              <input v-model="docRequestSearch" type="text" placeholder="Search…"
+                class="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-navy-400" />
+            </div>
+            <div class="flex-1 overflow-y-auto">
+              <div v-if="filteredDocRequests.length === 0" class="p-4 text-center text-gray-400 text-xs">
+                {{ docRequestSearch ? 'No requests found' : 'Start typing to search…' }}
+              </div>
+              <button v-for="req in filteredDocRequests" :key="req.id"
+                @click="selectedDocRequest = req"
+                class="w-full text-left px-6 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                :class="selectedDocRequest?.id === req.id ? 'bg-navy-50' : ''">
+                <div class="font-medium text-navy-700 text-sm truncate">{{ req.title }}</div>
+                <div class="text-xs text-gray-400 mt-0.5">
+                  <span class="font-medium text-gray-500">{{ req.user?.name }}</span>
+                  <span class="mx-1">·</span>
+                  <span>{{ req.user?.company || 'No company' }}</span>
+                </div>
+                <div class="text-xs text-gray-400 mt-1">{{ selectedDocRequests(req.id).length }} document{{ selectedDocRequests(req.id).length !== 1 ? 's' : '' }}</div>
               </button>
             </div>
-            <button @click="showAdminDocUpload = true" class="btn-primary text-xs py-2">+ Upload Document</button>
           </div>
 
-          <div v-if="adminDocsBySection(adminDocSection).length === 0"
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 py-16 text-center">
-            <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            <p class="text-gray-400 text-sm">No {{ adminDocSection === 'all' ? '' : adminDocSection + ' ' }}documents yet.</p>
-          </div>
+          <!-- Documents panel -->
+          <div class="flex-1 flex flex-col">
+            <div class="px-8 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+              <div>
+                <h3 v-if="selectedDocRequest" class="text-sm font-semibold text-navy-700">{{ selectedDocRequest.title }}</h3>
+                <p v-if="selectedDocRequest" class="text-xs text-gray-400 mt-0.5">
+                  <span class="font-medium text-gray-500">{{ selectedDocRequest.user?.name }}</span>
+                  <span class="mx-1">·</span>{{ selectedDocRequest.user?.company || 'No company' }}
+                </p>
+                <p v-else class="text-sm text-gray-400">Select a product to view documents</p>
+              </div>
+              <button v-if="selectedDocRequest" @click="adminDocForm.sourcing_request_id = selectedDocRequest.id; showAdminDocUpload = true" class="btn-primary text-xs py-2">+ Upload</button>
+            </div>
 
-          <div v-else class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div v-for="doc in adminDocsBySection(adminDocSection)" :key="doc.id"
-              class="flex items-center gap-4 px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors group">
-              <div class="w-9 h-9 rounded-xl bg-navy-50 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-navy-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div v-if="!selectedDocRequest" class="flex-1 flex items-center justify-center text-gray-400 text-sm">
+              Select a product from the list to view its documents
+            </div>
+
+            <div v-else-if="selectedDocRequests(selectedDocRequest.id).length === 0" class="flex-1 flex items-center justify-center">
+              <div class="text-center">
+                <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
+                <p class="text-gray-400 text-sm">No documents for this product yet.</p>
               </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-semibold text-navy-700 text-sm truncate">{{ doc.name }}</div>
-                <div class="text-gray-400 text-xs mt-0.5">
-                  {{ docTypeLabel(doc.type) }} · {{ fmtSize(doc.size) }}
-                  <span v-if="doc.sourcing_request"> · {{ doc.sourcing_request.title }}</span>
-                  <span v-if="doc.user"> · {{ doc.user.name }}</span>
+            </div>
+
+            <div v-else class="flex-1 overflow-y-auto px-8 py-4 space-y-2">
+              <div v-for="doc in selectedDocRequests(selectedDocRequest.id)" :key="doc.id"
+                class="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md transition-shadow group">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-navy-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
                 </div>
-              </div>
-              <div class="text-xs text-gray-400 flex-shrink-0">{{ fmtDate(doc.created_at) }}</div>
-              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <a v-if="doc.url" :href="doc.url" target="_blank"
-                  class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="View">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                </a>
-                <a v-if="doc.url" :href="doc.url" download
-                  class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="Download">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                </a>
-                <button @click="deleteAdminDoc(doc)" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
+                <div class="flex-1 min-w-0">
+                  <div class="font-medium text-navy-700 text-sm truncate">{{ doc.name }}</div>
+                  <div class="text-gray-400 text-xs mt-0.5">{{ docTypeLabel(doc.type) }} · {{ fmtSize(doc.size) }}</div>
+                </div>
+                <div class="text-xs text-gray-400 flex-shrink-0">{{ fmtDate(doc.created_at) }}</div>
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <a v-if="doc.url" :href="doc.url" target="_blank"
+                    class="p-1.5 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="View">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </a>
+                  <a v-if="doc.url" :href="doc.url" download
+                    class="p-1.5 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="Download">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                  </a>
+                  <button @click="deleteAdminDoc(doc)" class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -941,6 +970,8 @@ const showAdminDocUpload = ref(false)
 const adminDocUploadLoading = ref(false)
 const adminDocUploadError   = ref(null)
 const adminDocForm = reactive({ sourcing_request_id: '', type: 'contract', custom_type: '', name: '', file: null })
+const docRequestSearch = ref('')
+const selectedDocRequest = ref(null)
 const DOC_TYPES = [
   { value: 'contract',              label: 'Contract' },
   { value: 'license',               label: 'License' },
@@ -974,6 +1005,20 @@ const filteredUsers = computed(() => {
 })
 const totalUserPages = computed(() => Math.ceil(filteredUsers.value.length / USER_PAGE_SIZE))
 const paginatedUsers = computed(() => filteredUsers.value.slice((userPage.value - 1) * USER_PAGE_SIZE, userPage.value * USER_PAGE_SIZE))
+
+const filteredDocRequests = computed(() => {
+  const q = docRequestSearch.value.toLowerCase()
+  if (!q) return allRequests.value
+  return allRequests.value.filter(r => 
+    r.title.toLowerCase().includes(q) || 
+    r.user?.name?.toLowerCase().includes(q) ||
+    r.user?.company?.toLowerCase().includes(q)
+  )
+})
+
+function selectedDocRequests(requestId) {
+  return allDocuments.value.filter(d => d.sourcing_request_id === requestId)
+}
 
 // ── Request detail modal ────────────────────────────────────────
 const selectedRequest = ref(null)

@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model {
-    protected $fillable = ['sourcing_request_id','user_id','is_from_team','body'];
+    protected $fillable = ['sourcing_request_id','user_id','is_from_team','body','attachment_path','attachment_name','attachment_mime'];
     protected $casts = ['is_from_team' => 'boolean'];
 
     public function user(): BelongsTo { return $this->belongsTo(User::class); }

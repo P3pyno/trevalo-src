@@ -5,8 +5,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SourcingRequest extends Model {
-    protected $fillable = ['user_id','title','description','quantity','target_price','currency','destination_country','deadline','status','notes'];
-    protected $casts = ['deadline' => 'date', 'target_price' => 'decimal:2'];
+    protected $fillable = ['user_id','title','description','quantity','target_price','currency','destination_country','deadline','status','notes','product_images'];
+    protected $casts = ['deadline' => 'date', 'target_price' => 'decimal:2', 'product_images' => 'array'];
 
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
     public function quotes(): HasMany { return $this->hasMany(Quote::class); }

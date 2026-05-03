@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   {
@@ -35,7 +36,7 @@ const routes = [
     path: '/auth',
     name: 'auth',
     component: () => import('@/pages/Auth.vue'),
-    meta: { title: 'Sign In — Trivalo Sourcing', hideLayout: true },
+    meta: { title: 'Sign In — Trivalo Sourcing', hideLayout: true, guestOnly: true },
   },
   {
     path: '/quote',
@@ -47,13 +48,19 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/pages/Dashboard.vue'),
-    meta: { title: 'Dashboard — Trivalo Sourcing', hideLayout: true },
+    meta: { title: 'Dashboard — Trivalo Sourcing', hideLayout: true, requiresAuth: true },
   },
   {
     path: '/profile',
     name: 'profile',
     component: () => import('@/pages/Profile.vue'),
-    meta: { title: 'My Profile — Trivalo Sourcing' },
+    meta: { title: 'My Profile — Trivalo Sourcing', requiresAuth: true },
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('@/pages/AdminDashboard.vue'),
+    meta: { title: 'Admin — Trivalo Sourcing', hideLayout: true, requiresAuth: true, requiresAdmin: true },
   },
   {
     path: '/privacy',
@@ -76,6 +83,22 @@ const router = createRouter({
     if (savedPosition) return savedPosition
     return { top: 0 }
   },
+})
+
+router.beforeEach((to) => {
+  const auth = useAuthStore()
+
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    return { name: 'auth', query: { redirect: to.fullPath } }
+  }
+
+  if (to.meta.requiresAdmin && !auth.user?.is_admin) {
+    return { name: 'dashboard' }
+  }
+
+  if (to.meta.guestOnly && auth.isAuthenticated) {
+    return { name: 'dashboard' }
+  }
 })
 
 router.afterEach((to) => {

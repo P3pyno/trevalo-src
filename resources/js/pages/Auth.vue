@@ -408,10 +408,11 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const router    = useRouter()
+const route     = useRoute()
 const authStore = useAuthStore()
 
 const mode = ref('signin')
@@ -427,7 +428,7 @@ async function handleSignIn() {
   signinError.value = null
   try {
     await authStore.login({ email: signin.email, password: signin.password })
-    router.push('/')
+    router.push(route.query.redirect || '/dashboard')
   } catch (err) {
     signinError.value = err?.response?.data?.message || 'Invalid email or password.'
   } finally {
@@ -454,7 +455,7 @@ async function handleSignUp() {
       company:    signup.company || undefined,
       password:   signup.password,
     })
-    router.push('/')
+    router.push(route.query.redirect || '/dashboard')
   } catch (err) {
     const errors = err?.response?.data?.errors
     if (errors?.email)    signupErrors.email    = errors.email[0]

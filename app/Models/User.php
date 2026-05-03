@@ -13,7 +13,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
-    protected $fillable = ['name', 'email', 'password', 'company', 'phone', 'country'];
+    protected $fillable = ['name', 'email', 'password', 'company', 'phone', 'country', 'is_admin'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -22,6 +22,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'is_admin'          => 'boolean',
         ];
     }
 
@@ -29,6 +30,6 @@ class User extends Authenticatable
 
     public function profileFields(): array
     {
-        return $this->only('id', 'name', 'email', 'company', 'phone', 'country', 'created_at');
+        return $this->only('id', 'name', 'email', 'company', 'phone', 'country', 'is_admin', 'created_at');
     }
 }

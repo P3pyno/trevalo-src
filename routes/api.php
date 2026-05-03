@@ -10,6 +10,13 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\Admin\AdminStatsController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminRequestController;
+use App\Http\Controllers\Admin\AdminQuoteController;
+use App\Http\Controllers\Admin\AdminShipmentController;
+use App\Http\Controllers\Admin\AdminMessageController;
+use App\Http\Controllers\Admin\AdminDocumentController;
 
 Route::post('/contact', [ContactController::class, 'send'])->middleware('throttle:10,1');
 
@@ -47,9 +54,40 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/shipments', [ShipmentController::class, 'index']);
 
     // Documents
-    Route::get('/documents', [DocumentController::class, 'index']);
+    Route::get('/documents',              [DocumentController::class, 'index']);
+    Route::post('/documents',             [DocumentController::class, 'store']);
+    Route::delete('/documents/{document}',[DocumentController::class, 'destroy']);
 
     // Messages (per sourcing request)
     Route::get('/sourcing-requests/{sourcingRequest}/messages',  [MessageController::class, 'index']);
     Route::post('/sourcing-requests/{sourcingRequest}/messages', [MessageController::class, 'store']);
+});
+
+// Admin routes
+Route::prefix('admin')->middleware(['auth:sanctum', 'isAdmin'])->group(function () {
+    Route::get('/stats', [AdminStatsController::class, 'index']);
+
+    Route::get('/users',        [AdminUserController::class, 'index']);
+    Route::get('/users/{user}', [AdminUserController::class, 'show']);
+
+    Route::get('/sourcing-requests',                                    [AdminRequestController::class, 'index']);
+    Route::get('/sourcing-requests/{sourcingRequest}',                  [AdminRequestController::class, 'show']);
+    Route::patch('/sourcing-requests/{sourcingRequest}/status',         [AdminRequestController::class, 'updateStatus']);
+
+    Route::get('/quotes',            [AdminQuoteController::class, 'index']);
+    Route::post('/quotes',           [AdminQuoteController::class, 'store']);
+    Route::put('/quotes/{quote}',    [AdminQuoteController::class, 'update']);
+    Route::delete('/quotes/{quote}', [AdminQuoteController::class, 'destroy']);
+
+    Route::get('/shipments',              [AdminShipmentController::class, 'index']);
+    Route::post('/shipments',             [AdminShipmentController::class, 'store']);
+    Route::put('/shipments/{shipment}',   [AdminShipmentController::class, 'update']);
+
+    Route::get('/documents',                 [AdminDocumentController::class, 'index']);
+    Route::post('/documents',                [AdminDocumentController::class, 'store']);
+    Route::delete('/documents/{document}',   [AdminDocumentController::class, 'destroy']);
+
+    Route::get('/messages',                                                      [AdminMessageController::class, 'threads']);
+    Route::get('/sourcing-requests/{sourcingRequest}/messages',                  [AdminMessageController::class, 'index']);
+    Route::post('/sourcing-requests/{sourcingRequest}/messages',                 [AdminMessageController::class, 'store']);
 });

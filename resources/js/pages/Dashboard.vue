@@ -226,69 +226,145 @@
 
         <!-- ── 4. Shipments ── -->
         <div v-if="activeSection === 'shipments'" class="space-y-4">
+          <div class="flex justify-end">
+            <button @click="loadShipments()"
+              class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-navy-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Refresh
+            </button>
+          </div>
           <div v-if="shipments.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
-            <p class="text-gray-400 text-sm">No shipments yet. Shipment details will appear here once your order is confirmed.</p>
+            <p class="text-gray-400 text-sm">No shipments yet. Details will appear here once your order is confirmed.</p>
           </div>
           <div v-for="s in shipments" :key="s.id" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+
+            <!-- Header -->
             <div class="flex items-start justify-between gap-4 mb-5">
               <div>
                 <div class="flex items-center gap-2 mb-1">
                   <h3 class="font-bold text-navy-700">{{ s.sourcing_request?.title }}</h3>
                   <StatusBadge :status="s.status" />
                 </div>
-                <div class="text-gray-400 text-xs">{{ s.carrier }} · {{ s.method === 'sea' ? 'Sea Freight' : s.method === 'air' ? 'Air Freight' : 'Express' }}</div>
+                <div class="text-gray-400 text-xs flex items-center gap-2">
+                  <span>{{ s.carrier || 'Carrier TBD' }}</span>
+                  <span>·</span>
+                  <span>{{ methodLabel(s.method) }}</span>
+                </div>
               </div>
-              <div v-if="s.tracking_number" class="text-right">
-                <div class="text-xs text-gray-400 mb-0.5">Tracking</div>
-                <div class="font-mono text-sm font-semibold text-navy-700">{{ s.tracking_number }}</div>
+              <div v-if="s.tracking_number" class="text-right flex-shrink-0">
+                <div class="text-xs text-gray-400 mb-1">Tracking Number</div>
+                <div class="flex items-center gap-1.5 justify-end">
+                  <span class="font-mono text-sm font-semibold text-navy-700">{{ s.tracking_number }}</span>
+                  <button @click="copyTracking(s.tracking_number)"
+                    class="p-1 text-gray-400 hover:text-navy-700 rounded transition-colors" title="Copy tracking number">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
+              <div v-else class="text-xs text-gray-400 flex-shrink-0">Tracking pending</div>
             </div>
 
             <!-- Route visual -->
-            <div class="flex items-center gap-3 my-5">
+            <div class="flex items-center gap-2 my-4 px-2">
               <div class="flex-1 text-center">
-                <div class="text-xs text-gray-400 mb-1">Origin</div>
+                <div class="text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Origin</div>
                 <div class="font-semibold text-navy-700 text-sm">{{ s.origin }}</div>
               </div>
               <div class="flex-1 flex flex-col items-center">
                 <div class="flex items-center w-full">
-                  <div class="h-px flex-1 border-t-2 border-dashed" :class="s.status === 'delivered' ? 'border-green-400' : 'border-gray-200'"></div>
-                  <div class="mx-2">
-                    <svg class="w-6 h-6" :class="s.status === 'delivered' ? 'text-green-500' : 'text-navy-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z"/></svg>
+                  <div class="h-px flex-1 border-t-2 border-dashed transition-colors"
+                    :class="s.status !== 'pending' ? 'border-navy-400' : 'border-gray-200'"></div>
+                  <div class="mx-3 flex-shrink-0">
+                    <!-- Air -->
+                    <svg v-if="s.method === 'air'" class="w-6 h-6 transition-colors"
+                      :class="s.status !== 'pending' ? 'text-navy-600' : 'text-gray-300'"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    <!-- Sea -->
+                    <svg v-else-if="s.method === 'sea'" class="w-6 h-6 transition-colors"
+                      :class="s.status !== 'pending' ? 'text-navy-600' : 'text-gray-300'"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 17c1.5 1 4.5 1 6 0s4.5-1 6 0 4.5 1 6 0M5 17l2-7h10l2 7M10 10V7h4v3"/>
+                    </svg>
+                    <!-- Express/Truck -->
+                    <svg v-else class="w-6 h-6 transition-colors"
+                      :class="s.status !== 'pending' ? 'text-navy-600' : 'text-gray-300'"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z"/>
+                    </svg>
                   </div>
-                  <div class="h-px flex-1 border-t-2 border-dashed" :class="s.status === 'delivered' ? 'border-green-400' : 'border-gray-200'"></div>
+                  <div class="h-px flex-1 border-t-2 border-dashed transition-colors"
+                    :class="s.status === 'delivered' ? 'border-navy-400' : 'border-gray-200'"></div>
                 </div>
-                <div class="text-xs text-gray-400 mt-1">ETA {{ s.estimated_arrival ? fmtDate(s.estimated_arrival) : 'TBD' }}</div>
+                <div class="text-xs text-gray-400 mt-1.5">
+                  ETA: <strong class="text-gray-600">{{ s.estimated_arrival ? fmtDate(s.estimated_arrival) : 'TBD' }}</strong>
+                </div>
               </div>
               <div class="flex-1 text-center">
-                <div class="text-xs text-gray-400 mb-1">Destination</div>
+                <div class="text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Destination</div>
                 <div class="font-semibold text-navy-700 text-sm">{{ s.destination }}</div>
               </div>
             </div>
 
-            <!-- Status steps -->
-            <div class="flex items-center gap-0 mt-4">
-              <div v-for="(step, i) in shipmentSteps" :key="step.key" class="flex-1 flex flex-col items-center">
-                <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-colors"
-                  :class="stepReached(s.status, step.key) ? 'bg-navy-700 border-navy-700 text-white' : 'bg-white border-gray-200 text-gray-400'">
-                  <svg v-if="stepReached(s.status, step.key)" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                  <span v-else>{{ i + 1 }}</span>
+            <!-- Progress steps (fixed connector) -->
+            <div class="relative flex items-start mt-5 pt-1">
+              <div class="absolute left-0 right-0 top-3.5 h-px bg-gray-200"></div>
+              <div v-for="(step, i) in shipmentSteps" :key="step.key" class="flex-1 flex flex-col items-center relative">
+                <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 bg-white"
+                  :class="stepReached(s.status, step.key) ? 'bg-navy-700 border-navy-700 text-white' : 'border-gray-200 text-gray-300'">
+                  <svg v-if="stepReached(s.status, step.key)" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <span v-else class="text-[10px]">{{ i + 1 }}</span>
                 </div>
-                <div class="text-[10px] text-gray-400 mt-1 text-center leading-tight">{{ step.label }}</div>
-                <div v-if="i < shipmentSteps.length - 1" class="absolute mt-3.5 w-full h-px bg-gray-200" style="z-index:-1"></div>
+                <div class="text-[10px] mt-1.5 text-center leading-tight px-1"
+                  :class="stepReached(s.status, step.key) ? 'text-navy-700 font-semibold' : 'text-gray-400'">
+                  {{ step.label }}
+                </div>
               </div>
             </div>
+
           </div>
         </div>
 
         <!-- ── 5. Documents ── -->
-        <div v-if="activeSection === 'documents'" class="space-y-4">
-          <div v-if="documents.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
-            <p class="text-gray-400 text-sm">No documents yet. Inspection reports, invoices and shipping docs will appear here.</p>
+        <!-- ── 5. Documents ── -->
+        <div v-if="activeSection === 'documents'" class="space-y-5">
+          <!-- Header -->
+          <div class="flex items-center justify-between">
+            <div class="flex gap-2">
+              <button v-for="s in [['all','All'],['contract','Contracts'],['license','Licenses'],['other','Other']]" :key="s[0]"
+                @click="docSection = s[0]"
+                class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
+                :class="docSection === s[0] ? 'bg-navy-700 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-navy-300'">
+                {{ s[1] }}
+                <span v-if="s[0] !== 'all'" class="ml-1 opacity-70">({{ docsBySection(s[0]).length }})</span>
+              </button>
+            </div>
+            <button @click="showDocUpload = true" class="btn-primary text-xs py-2">
+              + Upload Document
+            </button>
           </div>
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div v-for="doc in documents" :key="doc.id"
-              class="flex items-center gap-4 px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+
+          <!-- Empty state -->
+          <div v-if="docsBySection(docSection).length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-16 text-center">
+            <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <p class="text-gray-400 text-sm">No {{ docSection === 'all' ? '' : docSection + ' ' }}documents yet.</p>
+            <button @click="showDocUpload = true" class="mt-3 text-xs text-navy-600 hover:text-navy-800 font-medium">Upload one →</button>
+          </div>
+
+          <!-- Document list -->
+          <div v-else class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div v-for="doc in docsBySection(docSection)" :key="doc.id"
+              class="flex items-center gap-4 px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors group">
               <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" :class="docBg(doc.type)">
                 <svg class="w-5 h-5" :class="docColor(doc.type)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -296,12 +372,25 @@
               </div>
               <div class="flex-1 min-w-0">
                 <div class="font-semibold text-navy-700 text-sm truncate">{{ doc.name }}</div>
-                <div class="text-gray-400 text-xs mt-0.5">{{ docTypeLabel(doc.type) }} · {{ fmtSize(doc.size) }} · {{ doc.sourcing_request?.title }}</div>
+                <div class="text-gray-400 text-xs mt-0.5">
+                  {{ docTypeLabel(doc.type) }} · {{ fmtSize(doc.size) }}
+                  <span v-if="doc.sourcing_request"> · {{ doc.sourcing_request.title }}</span>
+                </div>
               </div>
-              <div class="text-xs text-gray-400">{{ fmtDate(doc.created_at) }}</div>
-              <button class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="Download">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              </button>
+              <div class="text-xs text-gray-400 flex-shrink-0">{{ fmtDate(doc.created_at) }}</div>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <a v-if="doc.url" :href="doc.url" target="_blank"
+                  class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="View">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </a>
+                <a v-if="doc.url" :href="doc.url" download
+                  class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="Download">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </a>
+                <button @click="deleteDoc(doc)" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -353,27 +442,53 @@
                     <div class="text-xs text-gray-400 mb-1" :class="msg.is_from_team ? '' : 'text-right'">
                       {{ msg.is_from_team ? 'Trivalo Team' : authStore.user?.name?.split(' ')[0] }} · {{ fmtTime(msg.created_at) }}
                     </div>
-                    <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed"
+                    <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed space-y-2"
                       :class="msg.is_from_team
                         ? 'bg-gray-100 text-gray-700 rounded-tl-none'
                         : 'bg-navy-700 text-white rounded-tr-none'">
-                      {{ msg.body }}
+                      <p v-if="msg.body">{{ msg.body }}</p>
+                      <!-- Image attachment -->
+                      <a v-if="msg.attachment_path && isImage(msg.attachment_mime)"
+                        :href="msg.attachment_path" target="_blank">
+                        <img :src="msg.attachment_path" :alt="msg.attachment_name"
+                          class="max-w-[200px] rounded-lg border border-white/20 cursor-pointer hover:opacity-90 transition-opacity">
+                      </a>
+                      <!-- File attachment -->
+                      <a v-else-if="msg.attachment_path"
+                        :href="msg.attachment_path" target="_blank" download
+                        class="flex items-center gap-2 underline underline-offset-2 opacity-80 hover:opacity-100">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                        {{ msg.attachment_name }}
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- Input -->
-              <div class="border-t border-gray-100 p-4 flex gap-3">
-                <input v-model="newMessage" type="text"
-                  class="flex-1 rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm"
-                  placeholder="Type your message…"
-                  @keydown.enter.prevent="sendMessage">
-                <button @click="sendMessage" :disabled="!newMessage.trim() || sendingMessage"
-                  class="btn-primary text-sm px-5"
-                  :class="{ 'opacity-50 cursor-not-allowed': !newMessage.trim() }">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                </button>
+              <div class="border-t border-gray-100 p-4 space-y-2">
+                <!-- File preview -->
+                <div v-if="chatFile" class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-600">
+                  <svg class="w-4 h-4 text-navy-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                  <span class="flex-1 truncate">{{ chatFile.name }}</span>
+                  <button @click="chatFile = null; chatFileInput && (chatFileInput.value = '')" class="text-gray-400 hover:text-red-500 transition-colors">×</button>
+                </div>
+                <div class="flex gap-3">
+                  <input ref="chatFileInput" type="file" class="hidden" @change="chatFile = $event.target.files[0]">
+                  <button type="button" @click="chatFileInput.click()"
+                    class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0" title="Attach file">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                  </button>
+                  <input v-model="newMessage" type="text"
+                    class="flex-1 rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm"
+                    placeholder="Type your message…"
+                    @keydown.enter.prevent="sendMessage">
+                  <button @click="sendMessage" :disabled="(!newMessage.trim() && !chatFile) || sendingMessage"
+                    class="btn-primary text-sm px-5"
+                    :class="{ 'opacity-50 cursor-not-allowed': (!newMessage.trim() && !chatFile) }">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                  </button>
+                </div>
               </div>
             </template>
           </div>
@@ -430,11 +545,104 @@
               <label class="block text-sm font-medium text-gray-700 mb-1.5">Additional Notes</label>
               <textarea v-model="newReq.notes" rows="2" class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm resize-none" placeholder="Any other details, restrictions, or preferences…"></textarea>
             </div>
+
+            <!-- Product images -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Example Images <span class="text-gray-400 font-normal">(optional, up to 10)</span></label>
+              <div
+                class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-navy-400 transition-colors"
+                @click="$refs.reqImageInput.click()"
+                @dragover.prevent
+                @drop.prevent="onImageDrop">
+                <input ref="reqImageInput" type="file" multiple accept="image/*" class="hidden" @change="onImagePick">
+                <div v-if="reqImages.length === 0" class="py-4">
+                  <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <p class="text-xs text-gray-400">Click or drag images here</p>
+                </div>
+                <div v-else class="flex flex-wrap gap-2">
+                  <div v-for="(src, i) in reqImages" :key="i" class="relative group">
+                    <img :src="src" class="w-16 h-16 object-cover rounded-lg border border-gray-200">
+                    <button type="button" @click.stop="removeReqImage(i)"
+                      class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                  </div>
+                  <div class="w-16 h-16 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center cursor-pointer hover:border-navy-400 transition-colors" @click.stop="$refs.reqImageInput.click()">
+                    <span class="text-gray-400 text-xl">+</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div v-if="reqError" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{{ reqError }}</div>
             <div class="flex gap-3 pt-2">
               <button type="button" @click="showNewRequest = false" class="flex-1 py-3 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
               <button type="submit" :disabled="reqLoading" class="flex-1 btn-primary justify-center py-3 text-sm" :class="{ 'opacity-60 cursor-not-allowed': reqLoading }">
                 {{ reqLoading ? 'Submitting…' : 'Submit Request' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ── Document Upload Modal ── -->
+    <Transition name="fade">
+      <div v-if="showDocUpload" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" @click.self="showDocUpload = false">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+          <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-lg font-bold text-navy-700">Upload Document</h2>
+            <button @click="showDocUpload = false" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <form @submit.prevent="submitDocUpload" class="px-8 py-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Related Request *</label>
+              <select v-model="docForm.sourcing_request_id" required class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm">
+                <option value="" disabled>Select a sourcing request…</option>
+                <option v-for="req in requests" :key="req.id" :value="req.id">{{ req.title }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Document Type *</label>
+              <select v-model="docForm.type" required class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm">
+                <option v-for="t in DOC_TYPES" :key="t.value" :value="t.value">{{ t.label }}</option>
+              </select>
+            </div>
+            <div v-if="docForm.type === 'other'">
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Specify Type</label>
+              <input v-model="docForm.custom_type" type="text" class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm" placeholder="e.g. Supplier Agreement">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Document Name <span class="text-gray-400 font-normal">(optional)</span></label>
+              <input v-model="docForm.name" type="text" class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm" placeholder="Leave blank to use file name">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">File *</label>
+              <div class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-navy-400 transition-colors"
+                @click="$refs.docFileInput.click()">
+                <input ref="docFileInput" type="file" class="hidden"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp"
+                  @change="docForm.file = $event.target.files[0]">
+                <div v-if="!docForm.file" class="py-2">
+                  <svg class="w-7 h-7 text-gray-300 mx-auto mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                  <p class="text-xs text-gray-400">Click to select file (PDF, Word, Excel, images)</p>
+                </div>
+                <div v-else class="flex items-center gap-2 justify-center text-sm text-navy-700 font-medium">
+                  <svg class="w-5 h-5 text-navy-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  {{ docForm.file.name }}
+                  <button type="button" @click.stop="docForm.file = null" class="text-gray-400 hover:text-red-500 ml-1">×</button>
+                </div>
+              </div>
+            </div>
+            <div v-if="docUploadError" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{{ docUploadError }}</div>
+            <div class="flex gap-3 pt-2">
+              <button type="button" @click="showDocUpload = false" class="flex-1 py-3 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+              <button type="submit" :disabled="docUploadLoading || !docForm.file || !docForm.sourcing_request_id"
+                class="flex-1 btn-primary justify-center py-3 text-sm"
+                :class="{ 'opacity-60 cursor-not-allowed': docUploadLoading || !docForm.file || !docForm.sourcing_request_id }">
+                {{ docUploadLoading ? 'Uploading…' : 'Upload' }}
               </button>
             </div>
           </form>
@@ -481,7 +689,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, nextTick, watch, defineComponent, h } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch, defineComponent, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
@@ -562,8 +770,30 @@ const sendingMessage   = ref(false)
 const messagesEl       = ref(null)
 
 const newReq = reactive({ title: '', description: '', quantity: null, target_price: null, currency: 'USD', destination_country: '', deadline: '', notes: '' })
-const reqLoading = ref(false)
-const reqError   = ref(null)
+const reqLoading    = ref(false)
+const reqError      = ref(null)
+const reqImages     = ref([])
+const reqImageFiles = ref([])
+
+// Documents
+const docSection        = ref('all')
+const showDocUpload     = ref(false)
+const docUploadLoading  = ref(false)
+const docUploadError    = ref(null)
+const docForm = reactive({ sourcing_request_id: '', type: 'contract', custom_type: '', name: '', file: null })
+const DOC_TYPES = [
+  { value: 'contract',              label: 'Contract' },
+  { value: 'license',               label: 'License' },
+  { value: 'inspection_report',     label: 'Inspection Report' },
+  { value: 'invoice',               label: 'Invoice' },
+  { value: 'packing_list',          label: 'Packing List / BoL' },
+  { value: 'certificate_of_origin', label: 'Certificate of Origin' },
+  { value: 'other',                 label: 'Other (specify)' },
+]
+
+// Chat attachment
+const chatFile     = ref(null)
+const chatFileInput = ref(null)
 
 // ── Computed ──────────────────────────────────────
 const initials = computed(() => {
@@ -600,7 +830,9 @@ const shipmentSteps = [
 // ── Lifecycle ─────────────────────────────────────
 onMounted(async () => {
   setSection(route.query.section)
+  document.addEventListener('visibilitychange', onVisibilityChange)
   await Promise.all([loadAll()])
+  if (activeSection.value === 'shipments') startShipmentPolling()
 })
 
 watch(
@@ -612,6 +844,33 @@ watch(
     }
   }
 )
+
+// Refresh shipments whenever the user enters the tab, returns to the window,
+// or every 30 s while the tab is open — so admin status changes are always visible
+let shipmentPollTimer = null
+
+function startShipmentPolling() {
+  loadShipments()
+  shipmentPollTimer = setInterval(loadShipments, 30_000)
+}
+function stopShipmentPolling() {
+  clearInterval(shipmentPollTimer)
+  shipmentPollTimer = null
+}
+
+watch(activeSection, (section, prev) => {
+  if (section === 'shipments') startShipmentPolling()
+  else if (prev === 'shipments') stopShipmentPolling()
+})
+
+function onVisibilityChange() {
+  if (!document.hidden && activeSection.value === 'shipments') loadShipments()
+}
+
+onUnmounted(() => {
+  stopShipmentPolling()
+  document.removeEventListener('visibilitychange', onVisibilityChange)
+})
 
 async function loadAll() {
   const [r, q, s, d, st] = await Promise.all([
@@ -628,6 +887,11 @@ async function loadAll() {
   dashStats.value = st.data
 }
 
+async function loadShipments() {
+  const { data } = await axios.get('/shipments')
+  shipments.value = data
+}
+
 // ── Actions ───────────────────────────────────────
 async function handleLogout() {
   await authStore.logout()
@@ -638,11 +902,23 @@ async function submitRequest() {
   reqLoading.value = true
   reqError.value   = null
   try {
-    const { data } = await axios.post('/sourcing-requests', newReq)
+    let data
+    if (reqImageFiles.value.length > 0) {
+      const fd = new FormData()
+      Object.entries(newReq).forEach(([k, v]) => { if (v !== null && v !== '') fd.append(k, v) })
+      reqImageFiles.value.forEach(f => fd.append('images[]', f))
+      const res = await axios.post('/sourcing-requests', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+      data = res.data
+    } else {
+      const res = await axios.post('/sourcing-requests', newReq)
+      data = res.data
+    }
     requests.value.unshift(data)
     dashStats.value.active_requests = (dashStats.value.active_requests || 0) + 1
     dashStats.value.total_requests  = (dashStats.value.total_requests  || 0) + 1
     showNewRequest.value = false
+    reqImages.value = []
+    reqImageFiles.value = []
     Object.assign(newReq, { title: '', description: '', quantity: null, target_price: null, currency: 'USD', destination_country: '', deadline: '', notes: '' })
     setSection('requests')
   } catch (e) {
@@ -685,12 +961,24 @@ async function selectConversation(req) {
 }
 
 async function sendMessage() {
-  if (!newMessage.value.trim() || sendingMessage.value) return
+  if (!newMessage.value.trim() && !chatFile.value || sendingMessage.value) return
   sendingMessage.value = true
   try {
-    const { data } = await axios.post(`/sourcing-requests/${selectedRequest.value.id}/messages`, { body: newMessage.value })
+    let data
+    if (chatFile.value) {
+      const fd = new FormData()
+      if (newMessage.value.trim()) fd.append('body', newMessage.value)
+      fd.append('attachment', chatFile.value)
+      const res = await axios.post(`/sourcing-requests/${selectedRequest.value.id}/messages`, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+      data = res.data
+    } else {
+      const res = await axios.post(`/sourcing-requests/${selectedRequest.value.id}/messages`, { body: newMessage.value })
+      data = res.data
+    }
     messages.value.push(data)
     newMessage.value = ''
+    chatFile.value = null
+    if (chatFileInput.value) chatFileInput.value.value = ''
     await nextTick()
     scrollMessages()
   } finally {
@@ -725,14 +1013,77 @@ function stepReached(status, step) {
   const order = ['pending', 'in_transit', 'customs', 'delivered']
   return order.indexOf(status) >= order.indexOf(step)
 }
+function methodLabel(m) {
+  return { sea: 'Sea Freight', air: 'Air Freight', express: 'Express' }[m] || m
+}
+function copyTracking(n) {
+  navigator.clipboard?.writeText(n)
+}
 function docBg(type) {
-  return { inspection_report: 'bg-blue-50', invoice: 'bg-green-50', packing_list: 'bg-purple-50', certificate_of_origin: 'bg-orange-50' }[type] || 'bg-gray-100'
+  return { contract: 'bg-navy-50', license: 'bg-gold-50', inspection_report: 'bg-blue-50', invoice: 'bg-green-50', packing_list: 'bg-purple-50', certificate_of_origin: 'bg-orange-50' }[type] || 'bg-gray-100'
 }
 function docColor(type) {
-  return { inspection_report: 'text-blue-500', invoice: 'text-green-500', packing_list: 'text-purple-500', certificate_of_origin: 'text-orange-500' }[type] || 'text-gray-500'
+  return { contract: 'text-navy-600', license: 'text-gold-500', inspection_report: 'text-blue-500', invoice: 'text-green-500', packing_list: 'text-purple-500', certificate_of_origin: 'text-orange-500' }[type] || 'text-gray-500'
 }
 function docTypeLabel(type) {
-  return { inspection_report: 'Inspection Report', invoice: 'Invoice', packing_list: 'Packing List / BoL', certificate_of_origin: 'Certificate of Origin', other: 'Document' }[type] || type
+  return { contract: 'Contract', license: 'License', inspection_report: 'Inspection Report', invoice: 'Invoice', packing_list: 'Packing List / BoL', certificate_of_origin: 'Certificate of Origin', other: 'Other' }[type] || type
+}
+
+function docsBySection(section) {
+  if (section === 'all') return documents.value
+  if (section === 'contract' || section === 'license') return documents.value.filter(d => d.type === section)
+  return documents.value.filter(d => d.type !== 'contract' && d.type !== 'license')
+}
+
+async function deleteDoc(doc) {
+  if (!confirm(`Delete "${doc.name}"?`)) return
+  await axios.delete(`/documents/${doc.id}`)
+  documents.value = documents.value.filter(d => d.id !== doc.id)
+}
+
+async function submitDocUpload() {
+  if (!docForm.file || !docForm.sourcing_request_id) return
+  docUploadLoading.value = true
+  docUploadError.value   = null
+  try {
+    const fd = new FormData()
+    fd.append('sourcing_request_id', docForm.sourcing_request_id)
+    const effectiveType = (docForm.type === 'other' && docForm.custom_type.trim()) ? docForm.custom_type.trim() : docForm.type
+    fd.append('type', effectiveType)
+    if (docForm.name.trim()) fd.append('name', docForm.name.trim())
+    fd.append('file', docForm.file)
+    const { data } = await axios.post('/documents', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    documents.value.unshift(data)
+    showDocUpload.value = false
+    Object.assign(docForm, { sourcing_request_id: '', type: 'contract', custom_type: '', name: '', file: null })
+  } catch (e) {
+    docUploadError.value = e?.response?.data?.message || 'Upload failed.'
+  } finally {
+    docUploadLoading.value = false
+  }
+}
+
+function onImagePick(e) {
+  addImages(Array.from(e.target.files))
+}
+function onImageDrop(e) {
+  addImages(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')))
+}
+function addImages(files) {
+  const remaining = 10 - reqImageFiles.value.length
+  files.slice(0, remaining).forEach(file => {
+    reqImageFiles.value.push(file)
+    const reader = new FileReader()
+    reader.onload = ev => reqImages.value.push(ev.target.result)
+    reader.readAsDataURL(file)
+  })
+}
+function removeReqImage(i) {
+  reqImages.value.splice(i, 1)
+  reqImageFiles.value.splice(i, 1)
+}
+function isImage(mime) {
+  return mime && mime.startsWith('image/')
 }
 </script>
 

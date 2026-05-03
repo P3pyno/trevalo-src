@@ -1,19 +1,31 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 use App\Models\SourcingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class MessageController {
-    public function index(Request $request, SourcingRequest $sourcingRequest) {
-        if ($sourcingRequest->user_id !== $request->user()->id) abort(403);
-        return response()->json($sourcingRequest->messages()->with('user')->get());
+class AdminMessageController {
+    public function threads() {
+        return response()->json(
+            SourcingRequest::has('messages')
+                ->with([
+                    'user:id,name,email',
+                    'messages' => fn($q) => $q->latest()->limit(1),
+                    'messages.user:id,name',
+                ])
+                ->latest('updated_at')
+                ->get(['id','user_id','title','status','updated_at'])
+        );
+    }
+
+    public function index(SourcingRequest $sourcingRequest) {
+        return response()->json(
+            $sourcingRequest->messages()->with('user:id,name')->oldest()->get()
+        );
     }
 
     public function store(Request $request, SourcingRequest $sourcingRequest) {
-        if ($sourcingRequest->user_id !== $request->user()->id) abort(403);
-
         $data = $request->validate([
             'body'       => ['nullable','string','max:5000'],
             'attachment' => ['nullable','file','max:20480'],
@@ -25,7 +37,7 @@ class MessageController {
 
         $payload = [
             'user_id'      => $request->user()->id,
-            'is_from_team' => false,
+            'is_from_team' => true,
             'body'         => $data['body'] ?? '',
         ];
 
@@ -38,6 +50,7 @@ class MessageController {
         }
 
         $msg = $sourcingRequest->messages()->create($payload);
-        return response()->json($msg->load('user'), 201);
+        $msg->load('user:id,name');
+        return response()->json($msg, 201);
     }
 }

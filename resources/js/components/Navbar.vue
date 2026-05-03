@@ -82,6 +82,14 @@
                   Profile
                 </RouterLink>
 
+                <RouterLink v-if="authStore.user?.is_admin" to="/admin" @click="profileOpen = false"
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gold-600 hover:text-gold-700 hover:bg-gold-50 transition-colors">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                  </svg>
+                  Admin Panel
+                </RouterLink>
+
                 <div class="border-t border-gray-100 mt-2 pt-2">
                   <button @click="handleLogout"
                     class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors">
@@ -139,6 +147,10 @@
             <RouterLink to="/profile" @click="store.closeMobileMenu()"
               class="block px-4 py-3 text-sm font-medium text-gray-600 hover:text-navy-700 hover:bg-navy-50 rounded-lg transition-colors">
               Profile
+            </RouterLink>
+            <RouterLink v-if="authStore.user?.is_admin" to="/admin" @click="store.closeMobileMenu()"
+              class="block px-4 py-3 text-sm font-medium text-gold-600 hover:text-gold-700 hover:bg-gold-50 rounded-lg transition-colors">
+              Admin Panel
             </RouterLink>
             <button @click="handleLogout(); store.closeMobileMenu()"
               class="block w-full text-left px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors">

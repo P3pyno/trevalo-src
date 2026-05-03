@@ -6,7 +6,7 @@
     </div>
   </section>
 
-  <section class="bg-white py-20">
+  <section class="bg-white py-12">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="space-y-10 text-gray-600 leading-relaxed">
 

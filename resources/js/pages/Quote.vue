@@ -15,7 +15,7 @@
   </section>
 
   <!-- Chat placeholder -->
-  <section class="bg-gray-50 py-24">
+  <section class="bg-gray-50 py-14">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <!-- Coming soon badge -->

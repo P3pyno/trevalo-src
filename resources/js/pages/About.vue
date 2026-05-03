@@ -15,7 +15,7 @@
   </section>
 
   <!-- Story -->
-  <section class="bg-white py-24">
+  <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <div>
@@ -66,7 +66,7 @@
   </section>
 
   <!-- Mission & Vision -->
-  <section class="bg-gray-50 py-24">
+  <section class="bg-gray-50 py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-2 gap-8">
         <div class="bg-navy-700 rounded-2xl p-10 text-white relative overflow-hidden">
@@ -90,9 +90,9 @@
   </section>
 
   <!-- Values -->
-  <section class="bg-white py-24">
+  <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
+      <div class="text-center mb-10">
         <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</div>
         <h2 class="section-title">{{ $t('about.values_title') }}</h2>
       </div>
@@ -109,9 +109,9 @@
   </section>
 
   <!-- Team -->
-  <section class="bg-gray-50 py-24">
+  <section class="bg-gray-50 py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
+      <div class="text-center mb-10">
         <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">The People Behind It</div>
         <h2 class="section-title">Meet Our Team</h2>
         <p class="section-subtitle mx-auto">International entrepreneurs who chose to build from China — bridging cultures, languages, and supply chains.</p>
@@ -160,7 +160,7 @@
   </section>
 
   <!-- CTA -->
-  <section class="bg-navy-700 py-20">
+  <section class="bg-navy-700 py-12">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-4xl font-extrabold text-white">{{ $t('cta.title') }}</h2>
       <p class="text-white/70 text-lg mt-4">{{ $t('cta.subtitle') }}</p>

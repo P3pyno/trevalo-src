@@ -14,7 +14,7 @@
   </section>
 
   <!-- Contact section -->
-  <section class="bg-gray-50 py-24">
+  <section class="bg-gray-50 py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-3 gap-12">
 

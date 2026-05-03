@@ -9,7 +9,7 @@
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/5 rounded-full"></div>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12">
       <div class="max-w-3xl">
         <!-- Badge -->
         <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-8">
@@ -61,9 +61,9 @@
   </section>
 
   <!-- Services overview -->
-  <section class="bg-gray-50 py-24">
+  <section class="bg-gray-50 py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
+      <div class="text-center mb-10">
         <h2 class="section-title">{{ $t('services.title') }}</h2>
         <p class="section-subtitle mx-auto">{{ $t('services.subtitle') }}</p>
       </div>
@@ -94,7 +94,7 @@
   </section>
 
   <!-- Why Choose Us -->
-  <section class="bg-white py-24">
+  <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <!-- Left: decorative visual -->
@@ -143,9 +143,9 @@
   </section>
 
   <!-- How It Works (brief) -->
-  <section class="bg-gray-50 py-24">
+  <section class="bg-gray-50 py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
+      <div class="text-center mb-10">
         <h2 class="section-title">{{ $t('how.title') }}</h2>
         <p class="section-subtitle mx-auto">{{ $t('how.subtitle') }}</p>
       </div>
@@ -172,9 +172,9 @@
   </section>
 
   <!-- Testimonials -->
-  <section class="bg-white py-24">
+  <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
+      <div class="text-center mb-10">
         <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">Client Stories</div>
         <h2 class="section-title">What Our Clients Say</h2>
         <p class="section-subtitle mx-auto">Businesses from around the world trust Trivalo Sourcing to connect them with reliable Chinese manufacturers.</p>
@@ -224,7 +224,7 @@
   </section>
 
   <!-- CTA Banner -->
-  <section class="bg-navy-700 py-20">
+  <section class="bg-navy-700 py-12">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-4xl font-extrabold text-white">{{ $t('cta.title') }}</h2>
       <p class="text-white/70 text-lg mt-4">{{ $t('cta.subtitle') }}</p>

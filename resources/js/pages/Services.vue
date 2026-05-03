@@ -14,7 +14,7 @@
   </section>
 
   <!-- Main Services -->
-  <section class="bg-white py-24">
+  <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="space-y-16">
         <div
@@ -56,7 +56,7 @@
   </section>
 
   <!-- Additional Services -->
-  <section class="bg-gray-50 py-24">
+  <section class="bg-gray-50 py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-14">
         <h2 class="section-title">Additional Services</h2>
@@ -75,7 +75,7 @@
   </section>
 
   <!-- Industries -->
-  <section class="bg-white py-24">
+  <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-14">
         <h2 class="section-title">Industries We Serve</h2>
@@ -94,7 +94,7 @@
   </section>
 
   <!-- CTA -->
-  <section class="bg-navy-700 py-20">
+  <section class="bg-navy-700 py-12">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-4xl font-extrabold text-white">{{ $t('cta.title') }}</h2>
       <p class="text-white/70 text-lg mt-4">{{ $t('cta.subtitle') }}</p>

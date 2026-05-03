@@ -44,6 +44,18 @@ const routes = [
     meta: { title: 'Get a Quote — Trivalo Sourcing' },
   },
   {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/pages/Dashboard.vue'),
+    meta: { title: 'Dashboard — Trivalo Sourcing', hideLayout: true },
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/pages/Profile.vue'),
+    meta: { title: 'My Profile — Trivalo Sourcing' },
+  },
+  {
     path: '/privacy',
     name: 'privacy',
     component: () => import('@/pages/Privacy.vue'),

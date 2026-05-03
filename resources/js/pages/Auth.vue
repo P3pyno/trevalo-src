@@ -356,9 +356,9 @@
                   class="w-4 h-4 mt-0.5 rounded border-gray-300 text-navy-700 focus:ring-navy-500 cursor-pointer">
                 <label for="terms" class="text-sm text-gray-600 cursor-pointer leading-relaxed">
                   I agree to the
-                  <a href="#" class="text-navy-700 font-medium hover:text-gold-500 transition-colors">Terms of Service</a>
+                  <RouterLink to="/terms" class="text-navy-700 font-medium hover:text-gold-500 transition-colors">Terms of Service</RouterLink>
                   and
-                  <a href="#" class="text-navy-700 font-medium hover:text-gold-500 transition-colors">Privacy Policy</a>
+                  <RouterLink to="/privacy" class="text-navy-700 font-medium hover:text-gold-500 transition-colors">Privacy Policy</RouterLink>
                 </label>
               </div>
 
@@ -397,9 +397,9 @@
 
       <!-- Footer -->
       <div class="px-6 py-5 border-t border-gray-100 flex flex-wrap gap-4 justify-center">
-        <span class="text-xs text-gray-400">© 2024 Trivalo Sourcing</span>
-        <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Privacy</a>
-        <a href="#" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Terms</a>
+        <span class="text-xs text-gray-400">© 2025 Trivalo Sourcing</span>
+        <RouterLink to="/privacy" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Privacy</RouterLink>
+        <RouterLink to="/terms" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Terms</RouterLink>
         <a href="mailto:info@trivalo-sourcing.com" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Support</a>
       </div>
     </div>
@@ -408,6 +408,11 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router    = useRouter()
+const authStore = useAuthStore()
 
 const mode = ref('signin')
 const showPassword = ref(false)
@@ -420,10 +425,14 @@ const signinError = ref(null)
 async function handleSignIn() {
   signinLoading.value = true
   signinError.value = null
-  // TODO: connect to Laravel /api/auth/login
-  await new Promise(r => setTimeout(r, 1000))
-  signinError.value = 'Invalid credentials. (Connect to Laravel auth to enable login.)'
-  signinLoading.value = false
+  try {
+    await authStore.login({ email: signin.email, password: signin.password })
+    router.push('/')
+  } catch (err) {
+    signinError.value = err?.response?.data?.message || 'Invalid email or password.'
+  } finally {
+    signinLoading.value = false
+  }
 }
 
 // Sign Up
@@ -437,15 +446,23 @@ async function handleSignUp() {
   signupError.value = null
   Object.assign(signupErrors, { email: '', password: '' })
 
-  if (signup.password.length < 8) {
-    signupErrors.password = 'Password must be at least 8 characters.'
+  try {
+    await authStore.register({
+      first_name: signup.firstName,
+      last_name:  signup.lastName,
+      email:      signup.email,
+      company:    signup.company || undefined,
+      password:   signup.password,
+    })
+    router.push('/')
+  } catch (err) {
+    const errors = err?.response?.data?.errors
+    if (errors?.email)    signupErrors.email    = errors.email[0]
+    if (errors?.password) signupErrors.password = errors.password[0]
+    if (!errors) signupError.value = err?.response?.data?.message || 'Registration failed.'
+  } finally {
     signupLoading.value = false
-    return
   }
-  // TODO: connect to Laravel /api/auth/register
-  await new Promise(r => setTimeout(r, 1000))
-  signupError.value = 'Registration endpoint not yet connected. (Add Laravel Sanctum to enable.)'
-  signupLoading.value = false
 }
 
 // Password strength

@@ -19,7 +19,7 @@ class AdminDocumentController {
             'sourcing_request_id' => ['required','exists:sourcing_requests,id'],
             'name'                => ['nullable','string','max:255'],
             'type'                => ['required','string','max:100'],
-            'file'                => ['required','file','max:20480','mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,gif,webp'],
+            'file'                => ['required','file','max:102400','mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,gif,webp'],
         ]);
 
         $file = $request->file('file');

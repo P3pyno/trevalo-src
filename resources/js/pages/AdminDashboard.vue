@@ -43,15 +43,9 @@
             <div class="text-white/40 text-xs truncate">{{ authStore.user?.email }}</div>
           </div>
         </div>
-        <div class="flex gap-2">
-          <RouterLink to="/dashboard"
-            class="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-            My Dashboard
-          </RouterLink>
+        <div class="flex gap-2 justify-center">
           <button @click="handleLogout"
-            class="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-white/60 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            class="w-full text-center py-2 text-xs text-white/60 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors">
             Logout
           </button>
         </div>
@@ -511,7 +505,7 @@
                   v-for="thread in messageThreads" :key="thread.id"
                   @click="selectThread(thread)"
                   class="w-full text-left px-4 py-3 border-b border-gray-50 transition-colors hover:bg-gray-50"
-                  :class="selectedThread?.id === thread.id ? 'bg-navy-50 border-l-2 border-l-navy-500' : ''">
+                  :class="selectedThread?.id === thread.id ? 'bg-navy-50 border-l-2 border-l-gold-400' : ''">
                   <div class="flex items-center justify-between mb-1">
                     <span class="text-sm font-medium text-navy-700 truncate">{{ thread.title }}</span>
                     <span class="text-[10px] text-gray-400 flex-shrink-0 ml-2">{{ fmtTime(thread.updated_at) }}</span>
@@ -888,14 +882,17 @@ const IconMessages   = mkIcon('M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 
 
 // ── Nav items ───────────────────────────────────────────────────
 const activeSection = ref('overview')
+const totalAdminDocuments = computed(() => allDocuments.value.length)
+const totalAdminMessages = computed(() => messageThreads.value.length)
+
 const navItems = computed(() => [
   { id: 'overview',   label: 'Overview',   icon: IconOverview,  description: 'Platform statistics', badge: null },
   { id: 'requests',   label: 'Requests',   icon: IconRequests,  description: 'All sourcing requests', badge: allRequests.value.filter(r => r.status === 'submitted').length || null },
   { id: 'quotes',     label: 'Quotes',     icon: IconQuotes,    description: 'Manage quotes', badge: allQuotes.value.filter(q => q.status === 'pending').length || null },
   { id: 'shipments',  label: 'Shipments',  icon: IconShipments, description: 'Track shipments', badge: null },
   { id: 'users',      label: 'Users',      icon: IconUsers,     description: 'Registered users', badge: null },
-  { id: 'documents',  label: 'Documents',  icon: IconDocuments, description: 'Manage client documents', badge: null },
-  { id: 'messages',   label: 'Messages',   icon: IconMessages,  description: 'Client conversations', badge: null },
+  { id: 'documents',  label: 'Documents',  icon: IconDocuments, description: 'Manage client documents', badge: totalAdminDocuments.value || null },
+  { id: 'messages',   label: 'Messages',   icon: IconMessages,  description: 'Client conversations', badge: totalAdminMessages.value || null },
 ])
 
 const currentSection = computed(() => {

@@ -26,12 +26,21 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function register(payload) {
     const { data } = await axios.post('/auth/register', payload)
-    setSession(data.user, data.token)
-    return data.user
+    // After registration, user needs to verify email. Don't set session.
+    // Return the registration response which includes the message
+    return data
   }
 
   async function login(payload) {
     const { data } = await axios.post('/auth/login', payload)
+    
+    // Check if email needs verification
+    if (data.needs_verification) {
+      const err = new Error('Email verification required')
+      err.response = { data }
+      throw err
+    }
+    
     setSession(data.user, data.token)
     return data.user
   }

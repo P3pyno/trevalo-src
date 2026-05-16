@@ -231,7 +231,15 @@
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
-                {{ signinError }}
+                <div>
+                  {{ signinError }}
+                  <div v-if="signinNeedsVerification" class="mt-2 text-xs">
+                    <p>Check your email for a verification link, or</p>
+                    <RouterLink :to="`/verify-email`" class="text-gold-500 hover:text-gold-600 font-medium">
+                      resend verification email
+                    </RouterLink>
+                  </div>
+                </div>
               </div>
 
               <button
@@ -258,65 +266,87 @@
             <!-- ── Sign Up form ── -->
             <form v-else key="signup" @submit.prevent="handleSignUp" class="mt-8 space-y-5">
 
-              <div class="grid grid-cols-2 gap-4">
+              <!-- Success message -->
+              <div v-if="signupSuccess" class="bg-green-50 border border-green-200 rounded-xl p-5">
+                <div class="flex gap-3">
+                  <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div>
+                    <h3 class="text-sm font-semibold text-green-800 mb-1">Account created successfully!</h3>
+                    <p class="text-xs text-green-700 mb-3">
+                      We've sent a verification email to <strong>{{ signup.email }}</strong>. Click the link in the email to verify your account and start sourcing.
+                    </p>
+                    <div class="space-y-2">
+                      <p class="text-xs text-green-700">Didn't receive the email?</p>
+                      <button type="button" @click="signupSuccess = false" class="text-xs text-green-700 underline font-medium hover:text-green-800">
+                        Resend verification email
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <template v-if="!signupSuccess">
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">First name</label>
+                    <input
+                      v-model="signup.firstName"
+                      type="text"
+                      required
+                      placeholder="Jean"
+                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
+                    >
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Last name</label>
+                    <input
+                      v-model="signup.lastName"
+                      type="text"
+                      required
+                      placeholder="Dupont"
+                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
+                    >
+                  </div>
+                </div>
+
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">First name</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Work email</label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                      </svg>
+                    </span>
+                    <input
+                      v-model="signup.email"
+                      type="email"
+                      required
+                      placeholder="you@company.com"
+                      class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
+                      :class="{ 'border-red-400 focus:ring-red-400': signupErrors.email }"
+                    >
+                  </div>
+                  <p v-if="signupErrors.email" class="mt-1 text-xs text-red-500">{{ signupErrors.email }}</p>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Company <span class="text-gray-400 font-normal">(optional)</span></label>
                   <input
-                    v-model="signup.firstName"
+                    v-model="signup.company"
                     type="text"
-                    required
-                    placeholder="Jean"
+                    placeholder="Your company name"
                     class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
                   >
                 </div>
+
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Last name</label>
-                  <input
-                    v-model="signup.lastName"
-                    type="text"
-                    required
-                    placeholder="Dupont"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
-                  >
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Work email</label>
-                <div class="relative">
-                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                  </span>
-                  <input
-                    v-model="signup.email"
-                    type="email"
-                    required
-                    placeholder="you@company.com"
-                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
-                    :class="{ 'border-red-400 focus:ring-red-400': signupErrors.email }"
-                  >
-                </div>
-                <p v-if="signupErrors.email" class="mt-1 text-xs text-red-500">{{ signupErrors.email }}</p>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Company <span class="text-gray-400 font-normal">(optional)</span></label>
-                <input
-                  v-model="signup.company"
-                  type="text"
-                  placeholder="Your company name"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
-                >
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
-                <div class="relative">
-                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
                   </span>
                   <input
@@ -382,6 +412,7 @@
                 </svg>
                 {{ signupLoading ? 'Creating account…' : 'Create Account' }}
               </button>
+              </template>
 
               <p class="text-center text-sm text-gray-500">
                 Already have an account?
@@ -422,15 +453,24 @@ const showPassword = ref(false)
 const signin = reactive({ email: '', password: '', remember: false })
 const signinLoading = ref(false)
 const signinError = ref(null)
+const signinNeedsVerification = ref(false)
+const signinVerificationEmail = ref('')
 
 async function handleSignIn() {
   signinLoading.value = true
   signinError.value = null
+  signinNeedsVerification.value = false
   try {
     await authStore.login({ email: signin.email, password: signin.password })
     router.push(route.query.redirect || '/dashboard')
   } catch (err) {
-    signinError.value = err?.response?.data?.message || 'Invalid email or password.'
+    if (err?.response?.data?.needs_verification) {
+      signinNeedsVerification.value = true
+      signinVerificationEmail.value = err.response.data.email
+      signinError.value = err.response.data.message
+    } else {
+      signinError.value = err?.response?.data?.message || 'Invalid email or password.'
+    }
   } finally {
     signinLoading.value = false
   }
@@ -440,22 +480,25 @@ async function handleSignIn() {
 const signup = reactive({ firstName: '', lastName: '', email: '', company: '', password: '', terms: false })
 const signupLoading = ref(false)
 const signupError = ref(null)
+const signupSuccess = ref(false)
 const signupErrors = reactive({ email: '', password: '' })
 
 async function handleSignUp() {
   signupLoading.value = true
   signupError.value = null
+  signupSuccess.value = false
   Object.assign(signupErrors, { email: '', password: '' })
 
   try {
-    await authStore.register({
+    const response = await authStore.register({
       first_name: signup.firstName,
       last_name:  signup.lastName,
       email:      signup.email,
       company:    signup.company || undefined,
       password:   signup.password,
     })
-    router.push(route.query.redirect || '/dashboard')
+    // Show success message - user needs to verify email
+    signupSuccess.value = true
   } catch (err) {
     const errors = err?.response?.data?.errors
     if (errors?.email)    signupErrors.email    = errors.email[0]

@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: Trivalo Sourcing API
+  version: 1.0.0
+  description: Global sourcing platform API with quotes, shipments, and supplier management
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+paths:
+  /sourcing-requests:
+    get:
+      summary: Get user's sourcing requests with pagination and filtering
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by title or description
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [submitted, confirmed, in_progress, delivered, cancelled]
+        - name: currency
+          in: query
+          schema:
+            type: string
+        - name: min_price
+          in: query
+          schema:
+            type: number
+        - name: max_price
+          in: query
+          schema:
+            type: number
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [title, created_at, deadline, target_price]
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 15
+      responses:
+        '200':
+          description: Paginated list of sourcing requests
+    post:
+      summary: Create a new sourcing request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                quantity:
+                  type: integer
+                target_price:
+                  type: number
+                currency:
+                  type: string
+                destination_country:
+                  type: string
+                deadline:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Sourcing request created
+  
+  /quotes:
+    get:
+      summary: Get user's quotes with pagination and filtering
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+        - name: min_price
+          in: query
+          schema:
+            type: number
+        - name: max_price
+          in: query
+          schema:
+            type: number
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 15
+      responses:
+        '200':
+          description: Paginated list of quotes
+  
+  /quotes/bulk/approve:
+    post:
+      summary: Bulk approve multiple quotes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Quotes approved
+  
+  /quotes/bulk/reject:
+    post:
+      summary: Bulk reject multiple quotes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Quotes rejected
+  
+  /dashboard/analytics:
+    get:
+      summary: Get analytics dashboard data
+      responses:
+        '200':
+          description: Analytics metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quote_metrics:
+                    type: object
+                  price_metrics:
+                    type: object
+                  time_metrics:
+                    type: object
+                  request_statuses:
+                    type: object
+  
+  /dashboard/supplier-performance:
+    get:
+      summary: Get supplier performance metrics
+      responses:
+        '200':
+          description: List of suppliers with performance metrics
+  
+  /activity-logs:
+    get:
+      summary: Get user's activity logs
+      parameters:
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated activity logs

@@ -29,7 +29,7 @@ class DocumentController {
         if ($sr->user_id !== $request->user()->id) abort(403);
 
         $file = $request->file('file');
-        $name = $data['name'] ?: $file->getClientOriginalName();
+        $name = $data['name'] ?? $file->getClientOriginalName();
         $path = $file->storeAs('uploads/documents', Str::uuid().'.'.$file->extension(), 'public');
         $url  = Storage::disk('public')->url($path);
 

@@ -39,6 +39,12 @@ const routes = [
     meta: { title: 'Sign In — Trivalo Sourcing', hideLayout: true, guestOnly: true },
   },
   {
+    path: '/verify-email/:id/:hash',
+    name: 'verify-email',
+    component: () => import('@/pages/VerifyEmail.vue'),
+    meta: { title: 'Verify Email — Trivalo Sourcing', hideLayout: true },
+  },
+  {
     path: '/quote',
     name: 'quote',
     component: () => import('@/pages/Quote.vue'),

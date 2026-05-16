@@ -23,7 +23,11 @@ Route::post('/contact', [ContactController::class, 'send'])->middleware('throttl
 Route::prefix('auth')->middleware('throttle:20,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login',    [AuthController::class, 'login']);
+    Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail']);
 });
+
+// Email verification route (public, uses signed URL)
+Route::get('/auth/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Auth
@@ -49,6 +53,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/quotes',               [QuoteController::class, 'index']);
     Route::patch('/quotes/{quote}/approve', [QuoteController::class, 'approve']);
     Route::patch('/quotes/{quote}/reject',  [QuoteController::class, 'reject']);
+    Route::post('/quotes/bulk/approve', [QuoteController::class, 'bulkApprove']);
+    Route::post('/quotes/bulk/reject',  [QuoteController::class, 'bulkReject']);
 
     // Shipments
     Route::get('/shipments', [ShipmentController::class, 'index']);
@@ -61,6 +67,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Messages (per sourcing request)
     Route::get('/sourcing-requests/{sourcingRequest}/messages',  [MessageController::class, 'index']);
     Route::post('/sourcing-requests/{sourcingRequest}/messages', [MessageController::class, 'store']);
+    
+    // Analytics & Analytics
+    Route::get('/dashboard/analytics', [DashboardController::class, 'analytics']);
+    Route::get('/dashboard/supplier-performance', [DashboardController::class, 'supplierPerformance']);
+    
+    // Activity logs
+    Route::get('/activity-logs', [DashboardController::class, 'activityLogs']);
 });
 
 // Admin routes

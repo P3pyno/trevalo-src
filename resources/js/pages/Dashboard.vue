@@ -224,7 +224,27 @@
           </div>
         </div>
 
-        <!-- ── 4. Shipments ── -->
+        <!-- ── 4. Quote Kanban ── -->
+        <div v-if="activeSection === 'kanban'" class="space-y-4">
+          <QuoteKanban />
+        </div>
+
+        <!-- ── 5. Analytics Dashboard ── -->
+        <div v-if="activeSection === 'analytics'" class="space-y-4">
+          <AnalyticsDashboard />
+        </div>
+
+        <!-- ── 6. Price Comparison ── -->
+        <div v-if="activeSection === 'comparison'" class="space-y-4">
+          <PriceComparison />
+        </div>
+
+        <!-- ── 7. Supplier Performance ── -->
+        <div v-if="activeSection === 'suppliers'" class="space-y-4">
+          <SupplierPerformance />
+        </div>
+
+        <!-- ── 8. Shipments ── -->
         <div v-if="activeSection === 'shipments'" class="space-y-4">
           <div class="flex justify-end">
             <button @click="loadShipments()"
@@ -333,8 +353,7 @@
           </div>
         </div>
 
-        <!-- ── 5. Documents ── -->
-        <!-- ── 5. Documents ── -->
+        <!-- ── 9. Documents ── -->
         <div v-if="activeSection === 'documents'" class="space-y-5">
           <!-- Header -->
           <div class="flex items-center justify-between">
@@ -395,7 +414,7 @@
           </div>
         </div>
 
-        <!-- ── 6. Messages ── -->
+        <!-- ── 10. Messages ── -->
         <div v-if="activeSection === 'messages'" class="flex gap-6 h-full" style="max-height: calc(100vh - 130px)">
           <!-- Request list -->
           <div class="w-72 flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-y-auto">
@@ -693,6 +712,11 @@ import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch, defin
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import LoadingSkeleton from '@/components/LoadingSkeleton.vue'
+import QuoteKanban from '@/components/QuoteKanban.vue'
+import PriceComparison from '@/components/PriceComparison.vue'
+import AnalyticsDashboard from '@/components/AnalyticsDashboard.vue'
+import SupplierPerformance from '@/components/SupplierPerformance.vue'
 
 const authStore = useAuthStore()
 const router    = useRouter()
@@ -700,7 +724,7 @@ const route     = useRoute()
 
 if (!authStore.isAuthenticated) router.push('/auth')
 
-const sectionIds = ['overview', 'requests', 'quotes', 'shipments', 'documents', 'messages']
+const sectionIds = ['overview', 'requests', 'quotes', 'kanban', 'analytics', 'comparison', 'suppliers', 'shipments', 'documents', 'messages']
 
 function normalizeSection(section) {
   return typeof section === 'string' && sectionIds.includes(section) ? section : 'overview'
@@ -726,6 +750,9 @@ const IconDoc        = mkIcon('M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5
 const IconTruck      = mkIcon('M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z')
 const IconFolder     = mkIcon('M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z')
 const IconChat       = mkIcon('M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z')
+const IconChart      = mkIcon('M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z')
+const IconDollar     = mkIcon('M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z')
+const IconKanban     = mkIcon('M9 4H5a2 2 0 00-2 2v14a2 2 0 002 2h4m0-18v18m0-18h10a2 2 0 012 2v14a2 2 0 01-2 2h-10')
 
 const statusMap = {
   submitted:   { label: 'Submitted',   cls: 'bg-blue-100 text-blue-700' },
@@ -801,14 +828,20 @@ const initials = computed(() => {
 })
 
 const pendingQuotes = computed(() => quotes.value.filter(q => q.status === 'pending'))
+const totalDocuments = computed(() => documents.value.length)
+const totalMessages = computed(() => messages.value.length)
 
 const navItems = computed(() => [
   { id: 'overview',  label: 'Overview',          icon: IconOverview, description: 'Your activity at a glance' },
   { id: 'requests',  label: 'Sourcing Requests',  icon: IconSearch,   description: 'Manage your product sourcing requests', badge: requests.value.filter(r => r.status === 'submitted').length || null },
   { id: 'quotes',    label: 'Quotes',             icon: IconDoc,      description: 'Review supplier quotes', badge: pendingQuotes.value.length || null },
+  { id: 'kanban',    label: 'Quote Workflow',     icon: IconKanban,   description: 'Kanban view of quote decisions' },
+  { id: 'analytics', label: 'Analytics',          icon: IconChart,    description: 'Performance metrics & insights' },
+  { id: 'comparison',label: 'Price Comparison',   icon: IconDollar,   description: 'Compare supplier prices' },
+  { id: 'suppliers', label: 'Supplier Performance', icon: IconTruck,   description: 'Supplier metrics & ratings' },
   { id: 'shipments', label: 'Shipments',          icon: IconTruck,    description: 'Track your shipments in real-time' },
-  { id: 'documents', label: 'Documents',          icon: IconFolder,   description: 'Inspection reports, invoices & more' },
-  { id: 'messages',  label: 'Messages',           icon: IconChat,     description: 'Communicate with the Trivalo team' },
+  { id: 'documents', label: 'Documents',          icon: IconFolder,   description: 'Inspection reports, invoices & more', badge: totalDocuments.value || null },
+  { id: 'messages',  label: 'Messages',           icon: IconChat,     description: 'Communicate with the Trivalo team', badge: totalMessages.value || null },
 ])
 
 const currentSection = computed(() => navItems.value.find(n => n.id === activeSection.value) || navItems.value[0])
@@ -880,16 +913,24 @@ async function loadAll() {
     axios.get('/documents'),
     axios.get('/dashboard/stats'),
   ])
-  requests.value  = r.data
-  quotes.value    = q.data
-  shipments.value = s.data
-  documents.value = d.data
+  console.log('Sourcing Requests Response:', r.data)
+  console.log('Quotes Response:', q.data)
+  console.log('Shipments Response:', s.data)
+  console.log('Documents Response:', d.data)
+  console.log('Stats Response:', st.data)
+  
+  requests.value  = r.data.data || r.data
+  quotes.value    = q.data.data || q.data
+  shipments.value = s.data.data || s.data
+  documents.value = d.data.data || d.data
   dashStats.value = st.data
+  
+  console.log('Parsed Quotes:', quotes.value)
 }
 
 async function loadShipments() {
   const { data } = await axios.get('/shipments')
-  shipments.value = data
+  shipments.value = data.data || data
 }
 
 // ── Actions ───────────────────────────────────────

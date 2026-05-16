@@ -92,11 +92,12 @@
         <div v-if="activeSection === 'overview'" class="space-y-8">
           <!-- Stats -->
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
-            <div v-for="stat in stats" :key="stat.label"
-              class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div v-for="(stat, idx) in stats" :key="stat.label"
+              class="list-item bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-navy-200 transition-all duration-200 hover:-translate-y-1"
+              :style="{ '--delay': `${idx * 0.05}s` }">
               <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center" :class="stat.bg">
-                  <component :is="stat.icon" class="w-5 h-5" :class="stat.color" />
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-200" :class="stat.bg">
+                  <component :is="stat.icon" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" :class="stat.color" />
                 </div>
               </div>
               <div class="text-3xl font-extrabold text-navy-700">{{ stat.value }}</div>
@@ -158,7 +159,7 @@
           </div>
 
           <div v-for="req in requests" :key="req.id"
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:border-navy-200 hover:shadow-md transition-all duration-200 cursor-pointer"
+            class="card-hover bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transform transition-all duration-200"
             @click="openRequest(req)">
             <div class="flex items-start justify-between gap-4">
               <div class="flex-1 min-w-0">
@@ -193,7 +194,7 @@
           <div v-if="quotes.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
             <p class="text-gray-400 text-sm">No quotes received yet. Submit a sourcing request to get started.</p>
           </div>
-          <div v-for="q in quotes" :key="q.id" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div v-for="q in quotes" :key="q.id" class="card-hover bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-start justify-between gap-4 mb-4">
               <div>
                 <div class="flex items-center gap-2 mb-1">
@@ -214,10 +215,10 @@
             </div>
             <p v-if="q.notes" class="text-gray-500 text-sm mt-4">{{ q.notes }}</p>
             <div v-if="q.status === 'pending'" class="flex gap-3 mt-4">
-              <button @click="approveQuote(q)" class="flex-1 py-2.5 text-sm font-semibold text-white bg-green-500 rounded-xl hover:bg-green-600 transition-colors">
+              <button @click="approveQuote(q)" class="flex-1 py-2.5 text-sm font-semibold text-white bg-green-500 rounded-xl hover:bg-green-600 active:scale-95 transition-all">
                 Approve Quote
               </button>
-              <button @click="rejectQuote(q)" class="flex-1 py-2.5 text-sm font-semibold text-red-500 border border-red-200 rounded-xl hover:bg-red-50 transition-colors">
+              <button @click="rejectQuote(q)" class="flex-1 py-2.5 text-sm font-semibold text-red-500 border border-red-200 rounded-xl hover:bg-red-50 active:scale-95 transition-all">
                 Reject
               </button>
             </div>
@@ -258,94 +259,116 @@
           <div v-if="shipments.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
             <p class="text-gray-400 text-sm">No shipments yet. Details will appear here once your order is confirmed.</p>
           </div>
-          <div v-for="s in shipments" :key="s.id" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div v-for="s in shipments" :key="s.id" class="group bg-white rounded-2xl shadow-md hover:shadow-xl border border-gray-100 hover:border-navy-200 p-6 transition-all duration-300 hover:-translate-y-1">
 
-            <!-- Header -->
-            <div class="flex items-start justify-between gap-4 mb-5">
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <h3 class="font-bold text-navy-700">{{ s.sourcing_request?.title }}</h3>
+            <!-- Header with gradient accent -->
+            <div class="flex items-start justify-between gap-4 mb-5 pb-4 border-b border-gray-100">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <h3 class="font-bold text-lg text-navy-700 group-hover:text-navy-900 transition-colors">{{ s.sourcing_request?.title }}</h3>
                   <StatusBadge :status="s.status" />
                 </div>
-                <div class="text-gray-400 text-xs flex items-center gap-2">
+                <div class="text-gray-500 text-xs flex items-center gap-2 font-medium">
+                  <svg v-if="s.method === 'air'" class="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                  </svg>
+                  <svg v-else-if="s.method === 'sea'" class="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 17c1.5 1 4.5 1 6 0s4.5-1 6 0 4.5 1 6 0M5 17l2-7h10l2 7M10 10V7h4v3"/>
+                  </svg>
+                  <svg v-else class="w-3.5 h-3.5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z"/>
+                  </svg>
                   <span>{{ s.carrier || 'Carrier TBD' }}</span>
-                  <span>·</span>
-                  <span>{{ methodLabel(s.method) }}</span>
+                  <span class="text-gray-300">·</span>
+                  <span class="text-navy-600 font-semibold">{{ methodLabel(s.method) }}</span>
                 </div>
               </div>
-              <div v-if="s.tracking_number" class="text-right flex-shrink-0">
-                <div class="text-xs text-gray-400 mb-1">Tracking Number</div>
+              <div v-if="s.tracking_number" class="text-right flex-shrink-0 bg-gray-50 rounded-xl p-3 group-hover:bg-navy-50 transition-colors">
+                <div class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1">Tracking</div>
                 <div class="flex items-center gap-1.5 justify-end">
-                  <span class="font-mono text-sm font-semibold text-navy-700">{{ s.tracking_number }}</span>
+                  <span class="font-mono text-sm font-bold text-navy-700 group-hover:text-navy-900">{{ s.tracking_number }}</span>
                   <button @click="copyTracking(s.tracking_number)"
-                    class="p-1 text-gray-400 hover:text-navy-700 rounded transition-colors" title="Copy tracking number">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    class="p-1.5 text-gray-400 hover:text-gold-500 hover:bg-gold-50 rounded-lg transition-all" title="Copy tracking number">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                   </button>
                 </div>
               </div>
-              <div v-else class="text-xs text-gray-400 flex-shrink-0">Tracking pending</div>
+              <div v-else class="text-xs text-gray-400 flex-shrink-0 bg-gray-50 rounded-lg px-3 py-2 font-medium">Tracking pending</div>
             </div>
 
-            <!-- Route visual -->
-            <div class="flex items-center gap-2 my-4 px-2">
-              <div class="flex-1 text-center">
-                <div class="text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Origin</div>
-                <div class="font-semibold text-navy-700 text-sm">{{ s.origin }}</div>
-              </div>
-              <div class="flex-1 flex flex-col items-center">
-                <div class="flex items-center w-full">
-                  <div class="h-px flex-1 border-t-2 border-dashed transition-colors"
-                    :class="s.status !== 'pending' ? 'border-navy-400' : 'border-gray-200'"></div>
-                  <div class="mx-3 flex-shrink-0">
-                    <!-- Air -->
-                    <svg v-if="s.method === 'air'" class="w-6 h-6 transition-colors"
-                      :class="s.status !== 'pending' ? 'text-navy-600' : 'text-gray-300'"
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
-                    <!-- Sea -->
-                    <svg v-else-if="s.method === 'sea'" class="w-6 h-6 transition-colors"
-                      :class="s.status !== 'pending' ? 'text-navy-600' : 'text-gray-300'"
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 17c1.5 1 4.5 1 6 0s4.5-1 6 0 4.5 1 6 0M5 17l2-7h10l2 7M10 10V7h4v3"/>
-                    </svg>
-                    <!-- Express/Truck -->
-                    <svg v-else class="w-6 h-6 transition-colors"
-                      :class="s.status !== 'pending' ? 'text-navy-600' : 'text-gray-300'"
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z"/>
-                    </svg>
+            <!-- Route visual with better styling -->
+            <div class="bg-gradient-to-r from-gray-50 to-transparent rounded-xl p-4 my-4 border border-gray-100">
+              <div class="flex items-center gap-2">
+                <div class="flex-1 text-center">
+                  <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Origin</div>
+                  <div class="font-bold text-navy-700 text-sm">{{ s.origin }}</div>
+                </div>
+                <div class="flex-1 flex flex-col items-center px-4">
+                  <div class="flex items-center w-full mb-2">
+                    <div class="h-0.5 flex-1 bg-gradient-to-r from-gray-200 via-navy-200 to-gray-200 transition-all duration-300"
+                      :class="s.status !== 'pending' ? 'via-navy-400 from-navy-300 to-navy-300' : ''"></div>
+                    <div class="mx-3 flex-shrink-0">
+                      <!-- Air -->
+                      <svg v-if="s.method === 'air'" class="w-7 h-7 p-1.5 rounded-full transition-all duration-300"
+                        :class="s.status !== 'pending' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                      </svg>
+                      <!-- Sea -->
+                      <svg v-else-if="s.method === 'sea'" class="w-7 h-7 p-1.5 rounded-full transition-all duration-300"
+                        :class="s.status !== 'pending' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 17c1.5 1 4.5 1 6 0s4.5-1 6 0 4.5 1 6 0M5 17l2-7h10l2 7M10 10V7h4v3"/>
+                      </svg>
+                      <!-- Express/Truck -->
+                      <svg v-else class="w-7 h-7 p-1.5 rounded-full transition-all duration-300"
+                        :class="s.status !== 'pending' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-400'"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z"/>
+                      </svg>
+                    </div>
+                    <div class="h-0.5 flex-1 bg-gradient-to-r from-gray-200 via-navy-200 to-gray-200 transition-all duration-300"
+                      :class="s.status === 'delivered' ? 'via-navy-400 from-navy-300 to-navy-300' : ''"></div>
                   </div>
-                  <div class="h-px flex-1 border-t-2 border-dashed transition-colors"
-                    :class="s.status === 'delivered' ? 'border-navy-400' : 'border-gray-200'"></div>
+                  <div class="text-xs text-gray-600 font-semibold">
+                    ETA: <span class="text-navy-700">{{ s.estimated_arrival ? fmtDate(s.estimated_arrival) : 'TBD' }}</span>
+                  </div>
                 </div>
-                <div class="text-xs text-gray-400 mt-1.5">
-                  ETA: <strong class="text-gray-600">{{ s.estimated_arrival ? fmtDate(s.estimated_arrival) : 'TBD' }}</strong>
+                <div class="flex-1 text-center">
+                  <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Destination</div>
+                  <div class="font-bold text-navy-700 text-sm">{{ s.destination }}</div>
                 </div>
-              </div>
-              <div class="flex-1 text-center">
-                <div class="text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Destination</div>
-                <div class="font-semibold text-navy-700 text-sm">{{ s.destination }}</div>
               </div>
             </div>
 
-            <!-- Progress steps (fixed connector) -->
-            <div class="relative flex items-start mt-5 pt-1">
-              <div class="absolute left-0 right-0 top-3.5 h-px bg-gray-200"></div>
-              <div v-for="(step, i) in shipmentSteps" :key="step.key" class="flex-1 flex flex-col items-center relative">
-                <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 bg-white"
-                  :class="stepReached(s.status, step.key) ? 'bg-navy-700 border-navy-700 text-white' : 'border-gray-200 text-gray-300'">
-                  <svg v-if="stepReached(s.status, step.key)" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                  </svg>
-                  <span v-else class="text-[10px]">{{ i + 1 }}</span>
-                </div>
-                <div class="text-[10px] mt-1.5 text-center leading-tight px-1"
-                  :class="stepReached(s.status, step.key) ? 'text-navy-700 font-semibold' : 'text-gray-400'">
-                  {{ step.label }}
+            <!-- Progress steps with enhanced styling -->
+            <div class="relative mt-6 h-20">
+              <!-- Background line -->
+              <div class="absolute left-3.5 right-3.5 top-1/2 transform -translate-y-1/2 h-1 bg-gray-300 rounded-full"></div>
+              <!-- Filled progress line -->
+              <div class="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-1 bg-blue-500 rounded-full transition-all duration-500"
+                :style="{ width: getProgressWidth(s.status) }"></div>
+              <div class="flex items-center justify-between relative z-10 h-full">
+                <div v-for="(step, i) in shipmentSteps" :key="step.key" class="flex flex-col items-center">
+                  <!-- Status circle -->
+                  <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300"
+                    :class="stepReached(s.status, step.key) 
+                      ? 'bg-blue-500 border-blue-500 text-white'
+                      : 'border-gray-300 text-gray-400 bg-white'">
+                    <svg v-if="stepReached(s.status, step.key)" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    <span v-else class="text-[11px] font-bold">{{ i + 1 }}</span>
+                  </div>
+                  <!-- Step label -->
+                  <div class="text-[11px] mt-2 text-center font-semibold leading-tight px-2 h-8 flex items-center justify-center"
+                    :class="stepReached(s.status, step.key) ? 'text-gray-700' : 'text-gray-500'">
+                    {{ step.label }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -755,19 +778,19 @@ const IconDollar     = mkIcon('M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-
 const IconKanban     = mkIcon('M9 4H5a2 2 0 00-2 2v14a2 2 0 002 2h4m0-18v18m0-18h10a2 2 0 012 2v14a2 2 0 01-2 2h-10')
 
 const statusMap = {
-  submitted:   { label: 'Submitted',   cls: 'bg-blue-100 text-blue-700' },
-  in_progress: { label: 'In Progress', cls: 'bg-yellow-100 text-yellow-700' },
-  quoted:      { label: 'Quoted',      cls: 'bg-purple-100 text-purple-700' },
-  confirmed:   { label: 'Confirmed',   cls: 'bg-indigo-100 text-indigo-700' },
-  production:  { label: 'Production',  cls: 'bg-orange-100 text-orange-700' },
-  shipped:     { label: 'Shipped',     cls: 'bg-cyan-100 text-cyan-700' },
-  delivered:   { label: 'Delivered',   cls: 'bg-green-100 text-green-700' },
-  cancelled:   { label: 'Cancelled',   cls: 'bg-gray-100 text-gray-500' },
-  pending:     { label: 'Pending',     cls: 'bg-yellow-100 text-yellow-700' },
-  approved:    { label: 'Approved',    cls: 'bg-green-100 text-green-700' },
-  rejected:    { label: 'Rejected',    cls: 'bg-red-100 text-red-600' },
-  in_transit:  { label: 'In Transit',  cls: 'bg-blue-100 text-blue-700' },
-  customs:     { label: 'In Customs',  cls: 'bg-orange-100 text-orange-700' },
+  submitted:   { label: 'Submitted',   cls: 'bg-blue-100 text-blue-700 font-semibold' },
+  in_progress: { label: 'In Progress', cls: 'bg-purple-100 text-purple-700 font-semibold' },
+  quoted:      { label: 'Quoted',      cls: 'bg-indigo-100 text-indigo-700 font-semibold' },
+  confirmed:   { label: 'Confirmed',   cls: 'bg-navy-100 text-navy-700 font-semibold' },
+  production:  { label: 'Production',  cls: 'bg-orange-100 text-orange-700 font-semibold' },
+  shipped:     { label: 'Shipped',     cls: 'bg-cyan-100 text-cyan-700 font-semibold' },
+  delivered:   { label: 'Delivered',   cls: 'bg-green-100 text-green-700 font-semibold' },
+  cancelled:   { label: 'Cancelled',   cls: 'bg-gray-100 text-gray-600 font-semibold' },
+  pending:     { label: 'Pending',     cls: 'bg-amber-100 text-amber-700 font-semibold' },
+  approved:    { label: 'Approved',    cls: 'bg-green-100 text-green-700 font-semibold' },
+  rejected:    { label: 'Rejected',    cls: 'bg-red-100 text-red-600 font-semibold' },
+  in_transit:  { label: 'In Transit',  cls: 'bg-blue-100 text-blue-700 font-semibold' },
+  customs:     { label: 'In Customs',  cls: 'bg-orange-100 text-orange-700 font-semibold' },
 }
 
 const StatusBadge = defineComponent({
@@ -775,8 +798,8 @@ const StatusBadge = defineComponent({
   props: { status: String },
   setup(props) {
     return () => {
-      const s = statusMap[props.status] || { label: props.status, cls: 'bg-gray-100 text-gray-600' }
-      return h('span', { class: `inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${s.cls}` }, s.label)
+      const s = statusMap[props.status] || { label: props.status, cls: 'bg-gray-100 text-gray-600 font-semibold' }
+      return h('span', { class: `inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${s.cls}` }, s.label)
     }
   }
 })
@@ -1053,6 +1076,18 @@ function fmtSize(bytes) {
 function stepReached(status, step) {
   const order = ['pending', 'in_transit', 'customs', 'delivered']
   return order.indexOf(status) >= order.indexOf(step)
+}
+function getProgressPercentage(status) {
+  const order = ['pending', 'in_transit', 'customs', 'delivered']
+  const index = order.indexOf(status)
+  return index === -1 ? 0 : (index / (order.length - 1)) * 100
+}
+function getProgressWidth(status) {
+  const percent = getProgressPercentage(status)
+  // Calculate width as a percentage from left-3.5 to right edge minus 3.5
+  // Approximate: 14px on left (1-2% depending on screen), extends to ~97%
+  const containerPercent = 1.5 + (percent / 100) * 95
+  return `${containerPercent}%`
 }
 function methodLabel(m) {
   return { sea: 'Sea Freight', air: 'Air Freight', express: 'Express' }[m] || m

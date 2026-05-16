@@ -14,6 +14,10 @@ class AuthController
 {
     public function register(Request $request)
     {
+        if (!$request->filled('email') && $request->filled('work_email')) {
+            $request->merge(['email' => $request->input('work_email')]);
+        }
+
         $data = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
             'last_name'  => ['required', 'string', 'max:100'],
@@ -30,7 +34,7 @@ class AuthController
         ]);
 
         // Send verification email
-        Mail::send(new EmailVerificationMail($user));
+        Mail::to($user->email)->send(new EmailVerificationMail($user));
 
         return response()->json([
             'message' => 'Registration successful. Please check your email to verify your account.',
@@ -116,7 +120,7 @@ class AuthController
             return response()->json(['message' => 'Email already verified.'], 400);
         }
 
-        Mail::send(new EmailVerificationMail($user));
+        Mail::to($user->email)->send(new EmailVerificationMail($user));
 
         return response()->json(['message' => 'Verification email sent. Please check your inbox.']);
     }

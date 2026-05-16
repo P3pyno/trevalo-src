@@ -155,7 +155,7 @@
 
           <!-- Heading -->
           <Transition name="slide-tab" mode="out-in">
-            <div :key="mode">
+            <div :key="mode" class="animate-fadeIn">
               <h1 class="text-2xl font-extrabold text-navy-700">
                 {{ mode === 'signin' ? 'Welcome back' : 'Create your account' }}
               </h1>
@@ -184,7 +184,7 @@
                     type="email"
                     required
                     placeholder="you@company.com"
-                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
+                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent focus:shadow-lg transition-all duration-200"
                   >
                 </div>
               </div>
@@ -205,10 +205,10 @@
                     :type="showPassword ? 'text' : 'password'"
                     required
                     placeholder="••••••••"
-                    class="w-full pl-10 pr-11 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"
+                    class="w-full pl-10 pr-11 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent focus:shadow-lg transition-all duration-200"
                   >
                   <button type="button" @click="showPassword = !showPassword"
-                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600">
+                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200">
                     <svg v-if="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -321,7 +321,9 @@
                     </span>
                     <input
                       v-model="signup.email"
+                      name="email"
                       type="email"
+                      autocomplete="email"
                       required
                       placeholder="you@company.com"
                       class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent transition"

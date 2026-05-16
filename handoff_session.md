@@ -217,28 +217,96 @@ Visit `http://127.0.0.1:8000/adminer.php` for database management.
 
 ---
 
-## Current Status
-- ✅ Server is running and accessible at `http://127.0.0.1:8000`
-- ✅ All migrations created and ready to run
-- ✅ API endpoints fully defined
-- ✅ Vue SPA structure scaffolded
-- ⏳ Frontend components (Views) - In development
-- ⏳ Frontend routing and state management - In development
+## Current Status (Latest Updates - May 17, 2026)
+
+### ✅ Completed in This Session
+1. **Email Verification System Fixed**
+   - Changed mail driver from `log` to `file` for development
+   - Emails are now saved to `storage/app/mail/` as files containing full HTML content
+   - Verification emails include signed URLs that expire in 24 hours
+   - Format: `MAIL_MAILER=file` in `.env`
+
+2. **Shipment Progress Indicators Enhanced**
+   - Implemented blue-themed progress tracking (matching design specs)
+   - Active circles: Blue background (`bg-blue-500`) with white checkmarks
+   - Inactive circles: Light gray with step numbers
+   - Animated progress line: Blue fill that extends based on shipment status (0%, 33%, 66%, 100%)
+   - Vertical alignment: Progress line centered on circles using `top-1/2 transform -translate-y-1/2`
+   - Four stages: Confirmed → In Transit → Customs → Delivered
+
+3. **Frontend Refinements**
+   - Animation system across all pages with smooth transitions
+   - UI/UX improvements to FloatingChat, LoadingSkeleton components
+   - Enhanced Auth page styling and user feedback
+
+4. **Version Control**
+   - All changes committed and pushed to GitHub (branch: main)
+   - Latest commit: `7cc84bb` - "Update shipments progress indicator with blue styling, fix email verification, and UI refinements"
+
+### Current Project Status
+- ✅ Server running at `http://127.0.0.1:8001` (custom port in .env)
+- ✅ All migrations executed
+- ✅ API endpoints fully functional
+- ✅ Frontend SPA complete with dashboard, shipments tracking, documents, messages
+- ✅ Admin dashboard with comprehensive management tools
+- ✅ Email verification system working (file-based for development)
+- ✅ File upload/download functionality implemented
+- ✅ Real-time shipment tracking with animated progress
+- ✅ Activity logging system active
+- ✅ Authentication & authorization working (Sanctum tokens)
 
 ---
 
 ## Next Steps for Development
-1. Build Vue components for authentication (login, register)
-2. Create dashboard and statistics views
-3. Build sourcing request creation and management UI
-4. Implement quote management interface
-5. Add messaging/chat component
-6. Build admin dashboard
-7. Integrate with email service for notifications
-8. Add image upload handling
-9. Implement real-time features (optional, using Broadcasting)
-10. Write comprehensive tests
-11. Deploy to production
+
+### High Priority (Ready to Work On)
+1. **Email Service Integration** - Replace file-based mailer with Mailtrap or SendGrid for production
+   - Current setup: `MAIL_MAILER=file` saves emails to `storage/app/mail/`
+   - For production: Update `.env` with SMTP credentials
+   
+2. **Payment Gateway Integration** - Implement payment processing for quotes
+   - Consider Stripe, PayPal, or other providers
+   - Add payment status tracking
+
+3. **Notification System** - Add real-time notifications for:
+   - Quote responses
+   - Shipment status updates
+   - Message receipts
+   - Request approvals
+
+4. **Advanced Search & Filtering** - Enhance sourcing request discovery
+   - Filter by category, price range, delivery time
+   - Full-text search capabilities
+
+5. **Supplier Rating System** - Add reviews and ratings for suppliers
+   - Rating on quality, delivery speed, communication
+   - Supplier profile credibility indicators
+
+### Medium Priority
+1. **Image Optimization** - Handle product image uploads and resizing
+   - Implement image compression
+   - Generate thumbnails
+
+2. **Bulk Operations** - Improve bulk quote management
+   - Bulk export to CSV
+   - Bulk status updates
+
+3. **Analytics Dashboard** - Expand admin analytics
+   - Request trends over time
+   - Supplier performance metrics
+   - Revenue tracking
+
+4. **Email Templates** - Style HTML email templates
+   - Verification email (currently functional but basic)
+   - Quote notifications
+   - Shipment updates
+
+### Low Priority (Optional Enhancements)
+1. **Mobile App** - React Native or Flutter app
+2. **API Documentation** - Swagger/OpenAPI spec
+3. **Real-time Broadcasting** - WebSocket notifications (Laravel Broadcasting)
+4. **Internationalization** - Multi-language support (Vue-i18n already configured)
+5. **Dark Mode** - Theme toggle functionality
 
 ---
 
@@ -253,10 +321,76 @@ Visit `http://127.0.0.1:8000/adminer.php` for database management.
 
 ---
 
-## Notes
+## Important Configuration Notes
+
+### Email System Setup
+**Current (Development):**
+```
+MAIL_MAILER=file
+# Emails saved to storage/app/mail/
+```
+
+**For Production (Example - Mailtrap):**
+```
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=465
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="noreply@trivalo-sourcing.com"
+```
+
+### Key Endpoints
+- **Frontend**: `http://127.0.0.1:8001/` (home, auth, dashboard)
+- **API Base**: `http://127.0.0.1:8001/api/`
+- **Email Verification**: `http://127.0.0.1:8001/api/auth/verify-email/{id}/{hash}`
+- **Database GUI**: `http://127.0.0.1:8001/adminer.php`
+
+### File Locations
+- **Environment**: `.env`
+- **Mail Config**: `config/mail.php`
+- **Migrations**: `database/migrations/`
+- **Email Mailables**: `app/Mail/EmailVerificationMail.php`
+- **Frontend Build**: `public/build/`
+- **Stored Emails**: `storage/app/mail/` (development only)
+
+### Brand Configuration
+- **Primary Color**: Navy (#284CA8)
+- **Secondary Color**: Gold (#C8A45D)
+- **Company Name**: Trivalo Sourcing
+- **Support Email**: info@trivalo-sourcing.com (configurable in `.env`)
+
+---
+
+## Technical Notes
+
+### Database & Migrations
 - The application uses automatic activity logging via the `LogsActivity` trait on SourcingRequest model
 - All timestamps are managed by Laravel's timestamps (created_at, updated_at)
 - File uploads are stored in `storage/app/` directory
 - The SPA routes are handled by a catch-all route in `routes/web.php`
 - Admin access is determined by the `is_admin` boolean field on users table
+- Email verification uses signed URLs (expire in 24 hours) with SHA1 hashing
+
+### Shipment Progress Tracking
+- Four stages: `pending`, `in_transit`, `customs`, `delivered`
+- Progress percentage calculated: `(stageIndex / 3) * 100`
+- Visual indicators update smoothly with 500ms transition
+- Full-width layout with `justify-between` distribution
+
+### Frontend Architecture
+- **State Management**: Pinia stores (auth, data)
+- **Routing**: Vue Router with lazy-loaded pages
+- **API Communication**: Axios interceptors for token management
+- **Styling**: Tailwind CSS with custom brand colors
+- **Build**: Vite with ~243.5 KB bundle size (86.85 KB gzipped)
+- **Build Time**: ~3 seconds
+
+### Git Workflow
+- Repository: `github.com/P3pyno/trevalo-src.git`
+- Main branch: `main`
+- Latest commit: `7cc84bb` - All changes tracked and documented in commits
+
+
 

@@ -220,11 +220,20 @@ Visit `http://127.0.0.1:8000/adminer.php` for database management.
 ## Current Status (Latest Updates - May 17, 2026)
 
 ### ✅ Completed in This Session
-1. **Email Verification System Fixed**
-   - Changed mail driver from `log` to `file` for development
-   - Emails are now saved to `storage/app/mail/` as files containing full HTML content
-   - Verification emails include signed URLs that expire in 24 hours
-   - Format: `MAIL_MAILER=file` in `.env`
+1. **Email Verification System - Production Ready**
+   - ✅ Resend.com SMTP fully integrated and tested
+   - ✅ Account creation workflow: Register → Verification Email Sent → Email Verified → Login
+   - ✅ Test case completed: Created "Test User" account with email verification
+   - ✅ Verification email delivered successfully via Resend.com
+   - ✅ Signed verification URL processed successfully
+   - ✅ User authenticated and dashboard loaded
+   - **Configuration:**
+     - SMTP Host: `smtp.resend.com`
+     - Port: `465` (SMTPS/SSL)
+     - Scheme: `smtps` (not `tls`)
+     - Auth: `resend` username with API key as password
+     - From Address: `onboarding@resend.dev` (Resend default domain)
+   - **Note:** Resend free tier requires sender to be `onboarding@resend.dev` for test emails
 
 2. **Shipment Progress Indicators Enhanced**
    - Implemented blue-themed progress tracking (matching design specs)
@@ -249,7 +258,7 @@ Visit `http://127.0.0.1:8000/adminer.php` for database management.
 - ✅ API endpoints fully functional
 - ✅ Frontend SPA complete with dashboard, shipments tracking, documents, messages
 - ✅ Admin dashboard with comprehensive management tools
-- ✅ Email verification system working (file-based for development)
+- ✅ **Email verification system PRODUCTION READY** (Resend.com SMTP)
 - ✅ File upload/download functionality implemented
 - ✅ Real-time shipment tracking with animated progress
 - ✅ Activity logging system active
@@ -260,21 +269,17 @@ Visit `http://127.0.0.1:8000/adminer.php` for database management.
 ## Next Steps for Development
 
 ### High Priority (Ready to Work On)
-1. **Email Service Integration** - Replace file-based mailer with Mailtrap or SendGrid for production
-   - Current setup: `MAIL_MAILER=file` saves emails to `storage/app/mail/`
-   - For production: Update `.env` with SMTP credentials
-   
-2. **Payment Gateway Integration** - Implement payment processing for quotes
+1. **Payment Gateway Integration** - Implement payment processing for quotes
    - Consider Stripe, PayPal, or other providers
    - Add payment status tracking
 
-3. **Notification System** - Add real-time notifications for:
+2. **Notification System** - Add real-time notifications for:
    - Quote responses
    - Shipment status updates
    - Message receipts
    - Request approvals
 
-4. **Advanced Search & Filtering** - Enhance sourcing request discovery
+3. **Advanced Search & Filtering** - Enhance sourcing request discovery
    - Filter by category, price range, delivery time
    - Full-text search capabilities
 
@@ -324,22 +329,29 @@ Visit `http://127.0.0.1:8000/adminer.php` for database management.
 ## Important Configuration Notes
 
 ### Email System Setup
-**Current (Development):**
+**Current (Production - Resend.com - TESTED ✅):**
+```
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtps
+MAIL_HOST=smtp.resend.com
+MAIL_PORT=465
+MAIL_USERNAME=resend
+MAIL_PASSWORD=re_5nvxMxkX_9NUgrbyb6GuG1FQXG5nDAS3K
+MAIL_FROM_ADDRESS="onboarding@resend.dev"
+MAIL_FROM_NAME="Trivalo Sourcing"
+```
+
+**Alternative (Development - File-based):**
 ```
 MAIL_MAILER=file
 # Emails saved to storage/app/mail/
 ```
 
-**For Production (Example - Mailtrap):**
-```
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=465
-MAIL_USERNAME=your_username
-MAIL_PASSWORD=your_password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS="noreply@trivalo-sourcing.com"
-```
+**For Custom Domain (Resend - Requires Domain Verification):**
+1. Verify a custom domain in Resend.com dashboard
+2. Update `MAIL_FROM_ADDRESS` to use custom domain email (e.g., noreply@yourdomain.com)
+3. API key remains the same
+4. Port and host settings remain the same
 
 ### Key Endpoints
 - **Frontend**: `http://127.0.0.1:8001/` (home, auth, dashboard)

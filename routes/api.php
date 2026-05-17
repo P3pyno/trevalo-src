@@ -30,14 +30,19 @@ Route::prefix('auth')->middleware('throttle:20,1')->group(function () {
 // Email verification route (public, uses signed URL)
 Route::get('/auth/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
-// Email monitoring endpoints (for development/testing)
-if (app()->environment('local')) {
-    Route::prefix('debug/email')->group(function () {
+// Email monitoring endpoints (for development/testing - local environment only)
+Route::prefix('debug/email')
+    ->middleware(function ($request, $next) {
+        if (!app()->environment('local')) {
+            return response()->json(['error' => 'Not available in this environment'], 403);
+        }
+        return $next($request);
+    })
+    ->group(function () {
         Route::get('/logs', [EmailMonitorController::class, 'logs']);
         Route::get('/status/{email}', [EmailMonitorController::class, 'status']);
         Route::get('/test-users', [EmailMonitorController::class, 'testUsers']);
     });
-}
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Auth

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-// All routes are handled by the Vue SPA
+// All non-API routes are handled by the Vue SPA
 Route::get('/{any}', function () {
     return view('app');
-})->where('any', '.*');
+})->where('any', '^(?!api).*');

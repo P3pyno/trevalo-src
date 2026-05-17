@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification Test Suite - Trivalo Sourcing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .status-verified { background-color: #d1fae5; color: #065f46; }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-error { background-color: #fee2e2; color: #991b1b; }
+        .command-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; background: #f9fafb; }
+        .endpoint-card { border-left: 4px solid #284CA8; padding: 16px; background: #f0f4ff; margin-bottom: 12px; }
+        pre { background: #1f2937; color: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto py-8 px-4 max-w-6xl">
+        <!-- Header -->
+        <div class="mb-8 border-b pb-6">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">📧 Email Verification Test Suite</h1>
+            <p class="text-gray-600">Trivalo Sourcing - Email Testing & Monitoring Dashboard</p>
+        </div>
+
+        <!-- Quick Start -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🚀 Quick Start</h2>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-4">
+                <p class="text-blue-900 mb-4"><strong>Current Setup:</strong> Resend.com SMTP with free tier (test mode)</p>
+                <p class="text-blue-800 text-sm mb-4">
+                    ℹ️ Free tier limitation: Can only send to verified email address (<code class="bg-white px-2 py-1 rounded">salhi45adam@gmail.com</code>)
+                </p>
+                <p class="text-blue-800 text-sm">
+                    ✨ For production: Verify a custom domain in Resend dashboard and update <code class="bg-white px-2 py-1 rounded">MAIL_FROM_ADDRESS</code> in `.env`
+                </p>
+            </div>
+        </section>
+
+        <!-- Testing Commands -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">⚙️ Testing Commands</h2>
+            
+            <div class="command-card mb-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Test Email Verification (Single User)</h3>
+                <pre>php artisan test:email salhi45adam@gmail.com --reset</pre>
+                <p class="text-gray-600 text-sm mt-2">Sends a verification email and displays the verification URL</p>
+            </div>
+
+            <div class="command-card mb-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Test with File-Based Mailer (No Limit)</h3>
+                <pre>MAIL_MAILER=file php artisan test:email test@example.com --reset</pre>
+                <p class="text-gray-600 text-sm mt-2">Test with any email using file-based storage (stored in <code>storage/app/mail/</code>)</p>
+            </div>
+
+            <div class="command-card">
+                <h3 class="font-semibold text-gray-900 mb-2">View Stored Emails (File Mode)</h3>
+                <pre>ls -la storage/app/mail/</pre>
+                <p class="text-gray-600 text-sm mt-2">Lists all emails stored when using <code>MAIL_MAILER=file</code></p>
+            </div>
+        </section>
+
+        <!-- API Endpoints -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🔗 Monitoring API Endpoints</h2>
+            <p class="text-gray-600 mb-4">Available in development environment (APP_ENV=local)</p>
+
+            <div class="endpoint-card">
+                <h3 class="font-semibold text-gray-900 mb-1">Get Recent Email Logs</h3>
+                <code class="block text-gray-800 font-mono text-sm mb-2">GET /api/debug/email/logs</code>
+                <p class="text-gray-600 text-sm">Returns the 50 most recent email-related log entries</p>
+            </div>
+
+            <div class="endpoint-card">
+                <h3 class="font-semibold text-gray-900 mb-1">Check User Email Status</h3>
+                <code class="block text-gray-800 font-mono text-sm mb-2">GET /api/debug/email/status/{email}</code>
+                <p class="text-gray-600 text-sm">Example: <code>/api/debug/email/status/salhi45adam@gmail.com</code></p>
+                <p class="text-gray-600 text-sm mt-2">Returns verification status, user ID, and timestamps</p>
+            </div>
+
+            <div class="endpoint-card">
+                <h3 class="font-semibold text-gray-900 mb-1">Get All Test Users</h3>
+                <code class="block text-gray-800 font-mono text-sm mb-2">GET /api/debug/email/test-users</code>
+                <p class="text-gray-600 text-sm">Lists all users created with "Test Company" or "Test User" prefix</p>
+            </div>
+        </section>
+
+        <!-- Verification URL Pattern -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🔐 Email Verification URL</h2>
+            <p class="text-gray-600 mb-4">Format generated by the test command:</p>
+            <pre>http://127.0.0.1:8001/api/auth/verify-email/{USER_ID}/{SHA1_HASH}?signature={SIGNED_URL_SIGNATURE}</pre>
+            <p class="text-gray-600 text-sm mt-4">
+                The hash is a SHA1 of the user's email. Laravel's signed URL verification ensures the link hasn't been tampered with and is still valid (expires in 24 hours).
+            </p>
+        </section>
+
+        <!-- Testing Workflow -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">📋 Complete Testing Workflow</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">1</div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-900">Run Test Command</h3>
+                            <code class="block text-gray-800 font-mono text-sm mt-2">php artisan test:email salhi45adam@gmail.com --reset</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">2</div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-900">Get Verification URL from Output</h3>
+                            <p class="text-gray-600 text-sm mt-1">Command prints the signed verification URL</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">3</div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-900">Click or Open Verification URL in Browser</h3>
+                            <p class="text-gray-600 text-sm mt-1">Marks email as verified in database</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">4</div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-900">Check Status via API</h3>
+                            <code class="block text-gray-800 font-mono text-sm mt-2">/api/debug/email/status/salhi45adam@gmail.com</code>
+                            <p class="text-gray-600 text-sm mt-1">Verify <code class="bg-gray-100 px-1 rounded">verified: true</code> in response</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">5</div>
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-gray-900">Login with Verified Account</h3>
+                            <p class="text-gray-600 text-sm mt-1">User should be able to login at /auth</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testing Multiple Emails -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🔄 Testing Multiple Emails</h2>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                <h3 class="font-semibold text-gray-900 mb-3">Option 1: Use File-Based Mailer (Recommended for Testing)</h3>
+                <pre class="mb-4">MAIL_MAILER=file php artisan test:email any@email.com --reset
+MAIL_MAILER=file php artisan test:email another@email.com --reset
+MAIL_MAILER=file php artisan test:email third@email.com --reset</pre>
+                <p class="text-gray-600 text-sm mb-4">Emails will be saved to <code class="bg-white px-2 py-1 rounded">storage/app/mail/</code> as individual files</p>
+                
+                <h3 class="font-semibold text-gray-900 mb-3 mt-6">Option 2: Add Custom Domain to Resend (Production)</h3>
+                <ol class="list-decimal list-inside text-gray-600 text-sm space-y-2">
+                    <li>Go to <a href="https://resend.com/domains" class="text-blue-600 hover:underline">Resend Dashboard → Domains</a></li>
+                    <li>Click "Add Domain"</li>
+                    <li>Enter your domain (e.g., <code class="bg-white px-2 py-1 rounded">mail.yourdomain.com</code>)</li>
+                    <li>Add DNS records as instructed by Resend</li>
+                    <li>Once verified, update in <code class="bg-white px-2 py-1 rounded">.env</code>:
+                        <pre class="mt-2">MAIL_FROM_ADDRESS="noreply@yourdomain.com"</pre>
+                    </li>
+                    <li>Test with any email address</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Environment Variables -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">⚙️ Email Configuration in .env</h2>
+            <div class="command-card">
+                <h3 class="font-semibold text-gray-900 mb-2">Current Resend.com Setup</h3>
+                <pre>MAIL_MAILER=smtp
+MAIL_SCHEME=smtps
+MAIL_HOST=smtp.resend.com
+MAIL_PORT=465
+MAIL_USERNAME=resend
+MAIL_PASSWORD=re_5nvxMxkX_9NUgrbyb6GuG1FQXG5nDAS3K
+MAIL_FROM_ADDRESS="onboarding@resend.dev"
+MAIL_FROM_NAME="Trivalo Sourcing"</pre>
+            </div>
+
+            <div class="command-card mt-4">
+                <h3 class="font-semibold text-gray-900 mb-2">For File-Based Testing</h3>
+                <pre>MAIL_MAILER=file
+# Emails saved to storage/app/mail/</pre>
+                <p class="text-gray-600 text-sm mt-2">Set this temporarily to test with any email address</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="border-t pt-6 mt-8 text-gray-600 text-sm">
+            <p>📚 For more information, see the <code class="bg-gray-100 px-2 py-1 rounded">handoff_session.md</code> documentation</p>
+            <p class="mt-2">💻 Test command: <code class="bg-gray-100 px-2 py-1 rounded">php artisan test:email --help</code></p>
+        </div>
+    </div>
+</body>
+</html>

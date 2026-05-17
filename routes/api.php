@@ -10,6 +10,7 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\EmailMonitorController;
 use App\Http\Controllers\Admin\AdminStatsController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminRequestController;
@@ -28,6 +29,15 @@ Route::prefix('auth')->middleware('throttle:20,1')->group(function () {
 
 // Email verification route (public, uses signed URL)
 Route::get('/auth/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+
+// Email monitoring endpoints (for development/testing)
+if (app()->environment('local')) {
+    Route::prefix('debug/email')->group(function () {
+        Route::get('/logs', [EmailMonitorController::class, 'logs']);
+        Route::get('/status/{email}', [EmailMonitorController::class, 'status']);
+        Route::get('/test-users', [EmailMonitorController::class, 'testUsers']);
+    });
+}
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Auth

@@ -20,7 +20,7 @@
 
       <!-- Coming soon badge -->
       <div class="flex justify-center mb-8">
-        <div class="inline-flex items-center gap-2 bg-gold-50 border border-gold-200 text-gold-600 text-sm font-semibold px-5 py-2 rounded-full">
+        <div class="inline-flex items-center gap-2 bg-gold-50 border border-gold-200 text-gold-700 text-sm font-semibold px-5 py-2 rounded-full">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
@@ -83,7 +83,7 @@
             type="text"
             placeholder="Type your message..."
             disabled
-            class="flex-1 rounded-xl border-gray-200 bg-white text-sm text-gray-400 cursor-not-allowed"
+            class="flex-1 rounded-xl border-gray-200 bg-white text-sm text-gray-500 cursor-not-allowed"
           >
           <button disabled class="btn-primary text-sm opacity-60 cursor-not-allowed">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

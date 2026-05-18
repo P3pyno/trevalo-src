@@ -19,7 +19,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <div>
-          <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">Our Story</div>
+          <div class="text-gold-700 text-sm font-semibold tracking-widest uppercase mb-3">Our Story</div>
           <h2 class="section-title">{{ $t('about.story_title') }}</h2>
           <div class="mt-6 space-y-4 text-gray-600 leading-relaxed">
             <p v-for="(para, i) in storyParagraphs" :key="i">{{ para }}</p>
@@ -80,7 +80,7 @@
         <div class="bg-white border border-gray-200 rounded-2xl p-10 relative overflow-hidden">
           <div class="absolute bottom-0 right-0 w-32 h-32 rounded-full bg-gold-50 translate-y-8 translate-x-8"></div>
           <div class="relative">
-            <div class="text-gold-500 text-xs font-bold tracking-widest uppercase mb-3">Vision</div>
+            <div class="text-gold-700 text-xs font-bold tracking-widest uppercase mb-3">Vision</div>
             <h3 class="text-2xl font-bold text-navy-700 mb-4">{{ $t('about.vision_title') }}</h3>
             <p class="text-gray-500 leading-relaxed">{{ $t('about.vision_body') }}</p>
           </div>
@@ -93,13 +93,13 @@
   <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-10">
-        <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</div>
+        <div class="text-gold-700 text-sm font-semibold tracking-widest uppercase mb-3">What We Stand For</div>
         <h2 class="section-title">{{ $t('about.values_title') }}</h2>
       </div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div v-for="value in values" :key="value.titleKey" class="text-center p-8 rounded-2xl border border-gray-100 hover:border-gold-200 hover:shadow-md transition-all duration-300">
           <div class="w-14 h-14 rounded-full bg-gold-50 border-2 border-gold-200 flex items-center justify-center mx-auto mb-5">
-            <component :is="value.icon" class="w-7 h-7 text-gold-500" />
+            <component :is="value.icon" class="w-7 h-7 text-gold-700" />
           </div>
           <h4 class="font-bold text-navy-700 text-lg mb-2">{{ $t(value.titleKey) }}</h4>
           <p class="text-gray-500 text-sm leading-relaxed">{{ $t(value.descKey) }}</p>
@@ -112,7 +112,7 @@
   <section class="bg-gray-50 py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-10">
-        <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">The People Behind It</div>
+        <div class="text-gold-700 text-sm font-semibold tracking-widest uppercase mb-3">The People Behind It</div>
         <h2 class="section-title">Meet Our Team</h2>
         <p class="section-subtitle mx-auto">International entrepreneurs who chose to build from China — bridging cultures, languages, and supply chains.</p>
       </div>
@@ -136,8 +136,8 @@
           </div>
 
           <h3 class="text-xl font-bold text-navy-700">Reda Dahmouch</h3>
-          <div class="text-gold-500 font-semibold text-sm mt-1">Founder & CEO</div>
-          <div class="text-gray-400 text-xs mt-1">MSc International Trade & Business</div>
+          <div class="text-gold-700 font-semibold text-sm mt-1">Founder & CEO</div>
+          <div class="text-gray-500 text-xs mt-1">MSc International Trade & Business</div>
 
           <p class="text-gray-500 text-sm leading-relaxed mt-5">
             With a master's degree in international trade and years of hands-on experience navigating China's manufacturing landscape, Reda founded Trivalo Sourcing to give global businesses the reliable, transparent partner he wished he'd had.

@@ -136,7 +136,7 @@
             <div>
               <div class="font-semibold text-navy-700 text-sm">{{ $t('contact.channel_email') }}</div>
               <div class="text-gray-500 text-sm mt-0.5">info@trivalo-sourcing.com</div>
-              <div class="text-gray-400 text-xs mt-1">Response within 24 hours</div>
+              <div class="text-gray-500 text-xs mt-1">Response within 24 hours</div>
             </div>
           </a>
 
@@ -155,7 +155,7 @@
             <div>
               <div class="font-semibold text-navy-700 text-sm">{{ $t('contact.channel_whatsapp') }}</div>
               <div class="text-gray-500 text-sm mt-0.5">+86 XXX XXXX XXXX</div>
-              <div class="text-gray-400 text-xs mt-1">Quick responses during business hours</div>
+              <div class="text-gray-500 text-xs mt-1">Quick responses during business hours</div>
             </div>
           </a>
 
@@ -172,7 +172,7 @@
             <div>
               <div class="font-semibold text-navy-700 text-sm">{{ $t('contact.channel_wechat') }}</div>
               <div class="text-gray-500 text-sm mt-0.5">trivalo_sourcing</div>
-              <div class="text-gray-400 text-xs mt-1">Scan QR code to connect</div>
+              <div class="text-gray-500 text-xs mt-1">Scan QR code to connect</div>
             </div>
           </button>
 
@@ -205,7 +205,7 @@
         <h3 class="text-navy-700 font-bold text-xl mb-2">Add Us on WeChat</h3>
         <p class="text-gray-500 text-sm mb-6">Scan the QR code with your WeChat app to connect.</p>
         <div class="w-48 h-48 mx-auto bg-gray-50 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-          <div class="text-center text-gray-400">
+          <div class="text-center text-gray-500">
             <svg class="w-10 h-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/>
               <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75V16.5zM16.5 6.75h.75v.75h-.75v-.75z"/>

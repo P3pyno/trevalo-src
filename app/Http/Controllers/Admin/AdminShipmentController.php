@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\ShipmentUpdated;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,7 @@ class AdminShipmentController
 
         $shipment = Shipment::create($data);
         $shipment->load(['sourcingRequest:id,title,user_id', 'sourcingRequest.user:id,name']);
+        broadcast(new ShipmentUpdated($shipment));
 
         return response()->json($shipment, 201);
     }
@@ -53,6 +55,8 @@ class AdminShipmentController
         ]);
 
         $shipment->update($data);
+        $shipment->load('sourcingRequest:id,title,user_id');
+        broadcast(new ShipmentUpdated($shipment));
 
         return response()->json($shipment);
     }

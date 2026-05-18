@@ -42,7 +42,7 @@
     </div>
 
     <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40">
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/70">
       <span class="text-xs tracking-widest uppercase">Scroll</span>
       <div class="w-px h-8 bg-white/20 animate-pulse"></div>
     </div>
@@ -123,7 +123,7 @@
           <div class="mt-10 space-y-6">
             <div v-for="point in whyPoints" :key="point.titleKey" class="flex gap-4">
               <div class="w-10 h-10 rounded-lg bg-gold-50 border border-gold-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <component :is="point.icon" class="w-5 h-5 text-gold-500" />
+                <component :is="point.icon" class="w-5 h-5 text-gold-700" />
               </div>
               <div>
                 <h4 class="font-semibold text-navy-700 text-base">{{ $t(point.titleKey) }}</h4>
@@ -156,7 +156,7 @@
 
         <div v-for="(step, idx) in steps" :key="idx" class="relative flex flex-col items-center text-center">
           <div class="w-20 h-20 rounded-full bg-white border-2 border-gold-300 flex items-center justify-center mb-5 shadow-sm z-10">
-            <span class="text-2xl font-extrabold text-gold-400">{{ idx + 1 }}</span>
+            <span class="text-2xl font-extrabold text-gold-700">{{ idx + 1 }}</span>
           </div>
           <h4 class="font-bold text-navy-700 text-base mb-2">{{ $t(step.titleKey) }}</h4>
           <p class="text-gray-500 text-sm leading-relaxed">{{ $t(step.descKey) }}</p>
@@ -175,7 +175,7 @@
   <section class="bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-10">
-        <div class="text-gold-500 text-sm font-semibold tracking-widest uppercase mb-3">Client Stories</div>
+        <div class="text-gold-700 text-sm font-semibold tracking-widest uppercase mb-3">Client Stories</div>
         <h2 class="section-title">What Our Clients Say</h2>
         <p class="section-subtitle mx-auto">Businesses from around the world trust Trivalo Sourcing to connect them with reliable Chinese manufacturers.</p>
       </div>
@@ -198,7 +198,7 @@
             <div class="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-gold-400 font-bold text-sm flex-shrink-0">{{ t.initials }}</div>
             <div>
               <div class="font-semibold text-navy-700 text-sm">{{ t.name }}</div>
-              <div class="text-gray-400 text-xs">{{ t.role }} · {{ t.country }}</div>
+              <div class="text-gray-500 text-xs">{{ t.role }} · {{ t.country }}</div>
             </div>
           </div>
         </div>
@@ -215,7 +215,7 @@
             <div class="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-gold-400 font-bold text-sm flex-shrink-0">{{ t.initials }}</div>
             <div>
               <div class="font-semibold text-navy-700 text-sm">{{ t.name }}</div>
-              <div class="text-gray-400 text-xs">{{ t.role }} · {{ t.country }}</div>
+              <div class="text-gray-500 text-xs">{{ t.role }} · {{ t.country }}</div>
             </div>
           </div>
         </div>

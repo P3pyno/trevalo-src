@@ -15,8 +15,8 @@
             :to="link.path"
             class="text-sm font-medium transition-colors duration-200"
             :class="isTransparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-navy-700'"
-            active-class="!text-gold-400 font-semibold"
-            exact-active-class="!text-gold-400 font-semibold"
+            :active-class="isTransparent ? '!text-gold-400 font-semibold' : '!text-gold-700 font-semibold'"
+            :exact-active-class="isTransparent ? '!text-gold-400 font-semibold' : '!text-gold-700 font-semibold'"
           >
             {{ $t(link.key) }}
           </RouterLink>
@@ -51,7 +51,7 @@
                 {{ authStore.user?.name?.split(' ')[0] }}
               </span>
               <svg class="w-4 h-4 transition-transform duration-200"
-                :class="[profileOpen ? 'rotate-180' : '', isTransparent ? 'text-white/70' : 'text-gray-400']"
+                :class="[profileOpen ? 'rotate-180' : '', isTransparent ? 'text-white/70' : 'text-gray-500']"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
               </svg>
@@ -63,7 +63,7 @@
                 <!-- User info -->
                 <div class="px-4 py-3 border-b border-gray-100">
                   <div class="text-sm font-semibold text-navy-700 truncate">{{ authStore.user?.name }}</div>
-                  <div class="text-xs text-gray-400 truncate mt-0.5">{{ authStore.user?.email }}</div>
+                  <div class="text-xs text-gray-500 truncate mt-0.5">{{ authStore.user?.email }}</div>
                 </div>
 
 
@@ -84,7 +84,7 @@
                 </RouterLink>
 
                 <RouterLink v-if="authStore.user?.is_admin" to="/admin" @click="profileOpen = false"
-                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gold-600 hover:text-gold-700 hover:bg-gold-50 transition-colors">
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gold-700 hover:text-gold-700 hover:bg-gold-50 transition-colors">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                   </svg>
@@ -150,7 +150,7 @@
               Profile
             </RouterLink>
             <RouterLink v-if="authStore.user?.is_admin" to="/admin" @click="store.closeMobileMenu()"
-              class="block px-4 py-3 text-sm font-medium text-gold-600 hover:text-gold-700 hover:bg-gold-50 rounded-lg transition-colors">
+              class="block px-4 py-3 text-sm font-medium text-gold-700 hover:text-gold-700 hover:bg-gold-50 rounded-lg transition-colors">
               Admin Panel
             </RouterLink>
             <button @click="handleLogout(); store.closeMobileMenu()"

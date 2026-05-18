@@ -28,9 +28,9 @@
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-sm font-medium text-gray-600">Conversion Rate</h3>
-            <svg class="w-5 h-5 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            <svg class="w-5 h-5 text-gold-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
           </div>
-          <div class="text-3xl font-bold text-gold-500">{{ analytics.quote_metrics.conversion_rate }}%</div>
+          <div class="text-3xl font-bold text-gold-700">{{ analytics.quote_metrics.conversion_rate }}%</div>
         </div>
         
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">

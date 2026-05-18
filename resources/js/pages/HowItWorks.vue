@@ -35,7 +35,7 @@
               <p class="text-gray-500 leading-relaxed mb-5">{{ step.body }}</p>
               <ul class="grid sm:grid-cols-2 gap-2">
                 <li v-for="point in step.bullets" :key="point" class="flex items-center gap-2 text-sm text-gray-600">
-                  <svg class="w-4 h-4 text-gold-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <svg class="w-4 h-4 text-gold-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                   </svg>
                   {{ point }}
@@ -57,9 +57,9 @@
       </div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div v-for="t in timeline" :key="t.step" class="bg-white rounded-2xl p-7 border border-gray-100 text-center">
-          <div class="text-gold-400 font-bold text-xs tracking-widest uppercase mb-2">{{ t.step }}</div>
+          <div class="text-gold-700 font-bold text-xs tracking-widest uppercase mb-2">{{ t.step }}</div>
           <div class="text-navy-700 font-extrabold text-3xl mb-1">{{ t.duration }}</div>
-          <div class="text-gray-400 text-sm">{{ t.label }}</div>
+          <div class="text-gray-500 text-sm">{{ t.label }}</div>
         </div>
       </div>
     </div>
@@ -84,7 +84,7 @@
           >
             <span class="font-semibold text-navy-700 pr-4">{{ faq.q }}</span>
             <svg
-              class="w-5 h-5 text-gold-400 flex-shrink-0 transition-transform duration-200"
+              class="w-5 h-5 text-gold-700 flex-shrink-0 transition-transform duration-200"
               :class="{ 'rotate-180': openFaq === idx }"
               fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
             >

@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
+use App\Events\MessageSent;
 use App\Models\SourcingRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class MessageController {
@@ -32,12 +32,14 @@ class MessageController {
         if ($request->hasFile('attachment')) {
             $file = $request->file('attachment');
             $path = $file->storeAs('uploads/messages', Str::uuid().'.'.$file->extension(), 'public');
-            $payload['attachment_path'] = Storage::disk('public')->url($path);
+            $payload['attachment_path'] = $path;
             $payload['attachment_name'] = $file->getClientOriginalName();
             $payload['attachment_mime'] = $file->getMimeType();
         }
 
         $msg = $sourcingRequest->messages()->create($payload);
-        return response()->json($msg->load('user'), 201);
+        $msg->load('user');
+        broadcast(new MessageSent($msg))->toOthers();
+        return response()->json($msg, 201);
     }
 }

@@ -111,7 +111,7 @@
           </svg>
           <div class="leading-none">
             <div class="text-navy-700 text-lg font-bold tracking-widest">TRIVALO</div>
-            <div class="text-gold-400 text-[9px] font-semibold tracking-[0.25em]">SOURCING</div>
+            <div class="text-gold-700 text-[9px] font-semibold tracking-[0.25em]">SOURCING</div>
           </div>
         </RouterLink>
         <RouterLink to="/" class="text-sm text-gray-500 hover:text-navy-700 transition-colors">
@@ -124,7 +124,7 @@
         <div class="w-full max-w-md">
 
           <!-- Back link (desktop) -->
-          <RouterLink to="/" class="hidden lg:inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-navy-700 transition-colors mb-8 group">
+          <RouterLink to="/" class="hidden lg:inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-navy-700 transition-colors mb-8 group">
             <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -175,7 +175,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
                 <div class="relative">
                   <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                   </span>
@@ -192,11 +192,11 @@
               <div>
                 <div class="flex justify-between items-center mb-1.5">
                   <label class="text-sm font-medium text-gray-700">Password</label>
-                  <a href="#" class="text-xs text-gold-500 hover:text-gold-600 font-medium transition-colors">Forgot password?</a>
+                <button type="button" @click="mode = 'forgot'" class="text-xs text-gold-500 hover:text-gold-600 font-medium transition-colors">Forgot password?</button>
                 </div>
                 <div class="relative">
                   <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
                   </span>
@@ -208,7 +208,7 @@
                     class="w-full pl-10 pr-11 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent focus:shadow-lg transition-all duration-200"
                   >
                   <button type="button" @click="showPassword = !showPassword"
-                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-gray-600 transition-colors duration-200">
                     <svg v-if="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -235,9 +235,20 @@
                   {{ signinError }}
                   <div v-if="signinNeedsVerification" class="mt-2 text-xs">
                     <p>Check your email for a verification link, or</p>
-                    <RouterLink :to="`/verify-email`" class="text-gold-500 hover:text-gold-600 font-medium">
-                      resend verification email
-                    </RouterLink>
+                    <button
+                      type="button"
+                      @click="handleResendVerification"
+                      :disabled="signinResendLoading"
+                      class="text-gold-500 hover:text-gold-600 font-medium disabled:opacity-60"
+                    >
+                      {{ signinResendLoading ? 'sending...' : 'resend verification email' }}
+                    </button>
+                    <p v-if="signinResendSuccess" class="mt-1 text-green-700">
+                      {{ signinResendSuccess }}
+                    </p>
+                    <p v-else-if="signinResendError" class="mt-1 text-red-600">
+                      {{ signinResendError }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -264,7 +275,7 @@
             </form>
 
             <!-- ── Sign Up form ── -->
-            <form v-else key="signup" @submit.prevent="handleSignUp" class="mt-8 space-y-5">
+            <form v-else-if="mode === 'signup'" key="signup" @submit.prevent="handleSignUp" class="mt-8 space-y-5">
 
               <!-- Success message -->
               <div v-if="signupSuccess" class="bg-green-50 border border-green-200 rounded-xl p-5">
@@ -315,7 +326,7 @@
                   <label class="block text-sm font-medium text-gray-700 mb-1.5">Work email</label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                       </svg>
                     </span>
@@ -334,7 +345,7 @@
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Company <span class="text-gray-400 font-normal">(optional)</span></label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Company <span class="text-gray-500 font-normal">(optional)</span></label>
                   <input
                     v-model="signup.company"
                     type="text"
@@ -347,7 +358,7 @@
                   <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
                   <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
                   </span>
@@ -360,7 +371,7 @@
                     :class="{ 'border-red-400 focus:ring-red-400': signupErrors.password }"
                   >
                   <button type="button" @click="showPassword = !showPassword"
-                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600">
+                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-gray-600">
                     <svg v-if="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -423,6 +434,74 @@
                 </button>
               </p>
             </form>
+
+            <!-- ── Forgot Password form ── -->
+            <form v-else-if="mode === 'forgot'" key="forgot" @submit.prevent="handleForgotPassword" class="mt-8 space-y-5">
+
+              <!-- Success message -->
+              <div v-if="forgotSuccess" class="bg-green-50 border border-green-200 rounded-xl p-5">
+                <div class="flex gap-3">
+                  <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div>
+                    <h3 class="text-sm font-semibold text-green-800 mb-1">Reset email sent!</h3>
+                    <p class="text-xs text-green-700 mb-3">
+                      We've sent a password reset link to <strong>{{ forgotEmail }}</strong>. Check your email and follow the link to reset your password.
+                    </p>
+                    <p class="text-xs text-green-700">The link will expire in 1 hour.</p>
+                  </div>
+                </div>
+              </div>
+
+              <template v-if="!forgotSuccess">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                      </svg>
+                    </span>
+                    <input
+                      v-model="forgot.email"
+                      type="email"
+                      required
+                      placeholder="you@company.com"
+                      class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent focus:shadow-lg transition-all duration-200"
+                    >
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1.5">Enter the email address associated with your account and we'll send you a password reset link.</p>
+                </div>
+
+                <!-- Error -->
+                <div v-if="forgotError" class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 flex items-center gap-2">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                  {{ forgotError }}
+                </div>
+
+                <button
+                  type="submit"
+                  :disabled="forgotLoading"
+                  class="w-full btn-primary justify-center py-3.5 text-sm"
+                  :class="{ 'opacity-60 cursor-not-allowed': forgotLoading }"
+                >
+                  <svg v-if="forgotLoading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  {{ forgotLoading ? 'Sending…' : 'Send Reset Link' }}
+                </button>
+              </template>
+
+              <p class="text-center text-sm text-gray-500">
+                <button type="button" @click="mode = 'signin'" class="text-navy-700 font-semibold hover:text-gold-500 transition-colors">
+                  Back to sign in
+                </button>
+              </p>
+            </form>
           </Transition>
 
         </div>
@@ -430,10 +509,10 @@
 
       <!-- Footer -->
       <div class="px-6 py-5 border-t border-gray-100 flex flex-wrap gap-4 justify-center">
-        <span class="text-xs text-gray-400">© 2025 Trivalo Sourcing</span>
-        <RouterLink to="/privacy" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Privacy</RouterLink>
-        <RouterLink to="/terms" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Terms</RouterLink>
-        <a href="mailto:info@trivalo-sourcing.com" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">Support</a>
+        <span class="text-xs text-gray-500">© 2025 Trivalo Sourcing</span>
+        <RouterLink to="/privacy" class="text-xs text-gray-500 hover:text-gray-600 transition-colors">Privacy</RouterLink>
+        <RouterLink to="/terms" class="text-xs text-gray-500 hover:text-gray-600 transition-colors">Terms</RouterLink>
+        <a href="mailto:info@trivalo-sourcing.com" class="text-xs text-gray-500 hover:text-gray-600 transition-colors">Support</a>
       </div>
     </div>
   </div>
@@ -457,11 +536,16 @@ const signinLoading = ref(false)
 const signinError = ref(null)
 const signinNeedsVerification = ref(false)
 const signinVerificationEmail = ref('')
+const signinResendLoading = ref(false)
+const signinResendSuccess = ref('')
+const signinResendError = ref('')
 
 async function handleSignIn() {
   signinLoading.value = true
   signinError.value = null
   signinNeedsVerification.value = false
+  signinResendSuccess.value = ''
+  signinResendError.value = ''
   try {
     await authStore.login({ email: signin.email, password: signin.password })
     router.push(route.query.redirect || '/dashboard')
@@ -475,6 +559,26 @@ async function handleSignIn() {
     }
   } finally {
     signinLoading.value = false
+  }
+}
+
+async function handleResendVerification() {
+  if (!signinVerificationEmail.value) {
+    signinResendError.value = 'Missing email address for verification resend.'
+    return
+  }
+
+  signinResendLoading.value = true
+  signinResendSuccess.value = ''
+  signinResendError.value = ''
+
+  try {
+    const data = await authStore.resendVerificationEmail(signinVerificationEmail.value)
+    signinResendSuccess.value = data.message || 'Verification email sent.'
+  } catch (err) {
+    signinResendError.value = err?.response?.data?.message || 'Failed to resend verification email.'
+  } finally {
+    signinResendLoading.value = false
   }
 }
 
@@ -532,6 +636,35 @@ const strengthTextColor = computed(() => {
 const strengthLabel = computed(() => {
   return ['', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength.value]
 })
+
+// Forgot Password
+const forgot = reactive({ email: '' })
+const forgotLoading = ref(false)
+const forgotError = ref(null)
+const forgotSuccess = ref(false)
+const forgotEmail = ref('')
+
+async function handleForgotPassword() {
+  forgotLoading.value = true
+  forgotError.value = null
+  forgotSuccess.value = false
+
+  try {
+    const response = await authStore.forgotPassword(forgot.email)
+    forgotSuccess.value = true
+    forgotEmail.value = forgot.email
+    // Reset form after 3 seconds
+    setTimeout(() => {
+      forgot.email = ''
+      mode.value = 'signin'
+      forgotSuccess.value = false
+    }, 5000)
+  } catch (err) {
+    forgotError.value = err?.response?.data?.message || 'Failed to send reset email. Please try again.'
+  } finally {
+    forgotLoading.value = false
+  }
+}
 </script>
 
 <style scoped>

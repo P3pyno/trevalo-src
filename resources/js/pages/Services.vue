@@ -25,13 +25,13 @@
         >
           <div :class="idx % 2 !== 0 ? 'lg:order-2' : ''">
             <div class="inline-flex items-center gap-2 bg-gold-50 border border-gold-200 rounded-full px-3 py-1 mb-5">
-              <span class="text-gold-600 text-xs font-semibold tracking-widest uppercase">Service 0{{ idx + 1 }}</span>
+              <span class="text-gold-700 text-xs font-semibold tracking-widest uppercase">Service 0{{ idx + 1 }}</span>
             </div>
             <h2 class="text-3xl font-bold text-navy-700 mb-4">{{ $t(service.titleKey) }}</h2>
             <p class="text-gray-500 leading-relaxed mb-6">{{ $t(service.descKey) }}</p>
             <ul class="space-y-3">
               <li v-for="point in service.points" :key="point" class="flex items-center gap-3 text-gray-600 text-sm">
-                <svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <svg class="w-5 h-5 text-gold-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
                 {{ point }}

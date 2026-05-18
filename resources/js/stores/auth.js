@@ -69,6 +69,21 @@ export const useAuthStore = defineStore('auth', () => {
     return data
   }
 
+  async function forgotPassword(email) {
+    const { data } = await axios.post('/auth/forgot-password', { email })
+    return data
+  }
+
+  async function resendVerificationEmail(email) {
+    const { data } = await axios.post('/auth/resend-verification-email', { email })
+    return data
+  }
+
+  async function resetPassword(payload) {
+    const { data } = await axios.post('/auth/reset-password', payload)
+    return data
+  }
+
   async function deleteAccount(payload) {
     await axios.delete('/user', { data: payload })
     clearSession()
@@ -81,7 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user, token, isAuthenticated,
+    setSession,
     register, login, logout,
-    fetchProfile, updateProfile, changePassword, deleteAccount,
+    fetchProfile, updateProfile, changePassword, forgotPassword, resendVerificationEmail, resetPassword, deleteAccount,
   }
 })

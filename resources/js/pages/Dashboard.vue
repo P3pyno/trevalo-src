@@ -1,8 +1,15 @@
 <template>
   <div class="flex h-screen bg-gray-50 overflow-hidden">
 
+    <!-- Mobile sidebar overlay -->
+    <div v-if="sidebarOpen"
+      class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+      @click="sidebarOpen = false" />
+
     <!-- ── Sidebar ─────────────────────────────────────────────── -->
-    <aside class="w-64 bg-navy-700 flex flex-col flex-shrink-0 shadow-xl">
+    <aside
+      class="fixed inset-y-0 left-0 z-50 w-64 bg-navy-700 flex flex-col flex-shrink-0 shadow-xl transition-transform duration-300 lg:relative lg:inset-auto lg:translate-x-0"
+      :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
       <!-- Logo -->
       <div class="px-6 py-5 border-b border-white/10">
         <RouterLink to="/" class="flex items-center gap-3 group">
@@ -46,7 +53,7 @@
           </div>
           <div class="min-w-0">
             <div class="text-white text-sm font-semibold truncate">{{ authStore.user?.name }}</div>
-            <div class="text-white/40 text-xs truncate">{{ authStore.user?.email }}</div>
+            <div class="text-white/70 text-xs truncate">{{ authStore.user?.email }}</div>
           </div>
         </div>
         <div class="flex gap-2">
@@ -68,13 +75,21 @@
     <div class="flex-1 flex flex-col overflow-hidden">
 
       <!-- Top bar -->
-      <header class="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between flex-shrink-0">
-        <div>
-          <h1 class="text-xl font-bold text-navy-700">{{ currentSection.label }}</h1>
-          <p class="text-gray-400 text-xs mt-0.5">{{ currentSection.description }}</p>
-        </div>
+      <header class="bg-white border-b border-gray-100 px-4 lg:px-8 py-4 flex items-center justify-between flex-shrink-0">
         <div class="flex items-center gap-3">
-          <RouterLink to="/" class="text-xs text-gray-400 hover:text-navy-700 transition-colors flex items-center gap-1">
+          <button @click="sidebarOpen = !sidebarOpen"
+            class="lg:hidden p-2 -ml-1 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-lg lg:text-xl font-bold text-navy-700">{{ currentSection.label }}</h1>
+            <p class="text-gray-500 text-xs mt-0.5 hidden sm:block">{{ currentSection.description }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 lg:gap-3">
+          <RouterLink to="/" class="text-xs text-gray-500 hover:text-navy-700 transition-colors flex items-center gap-1">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Back to site
           </RouterLink>
@@ -86,14 +101,29 @@
       </header>
 
       <!-- Scrollable body -->
-      <main class="flex-1 overflow-y-auto p-8">
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- ── Global loading skeleton ── -->
+        <div v-if="loading" class="space-y-6">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+            <LoadingSkeleton type="stat" :count="4" />
+          </div>
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100">
+              <div class="h-4 w-40 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div class="divide-y divide-gray-50">
+              <LoadingSkeleton type="table" :count="3" />
+            </div>
+          </div>
+        </div>
 
         <!-- ── 1. Overview ── -->
-        <div v-if="activeSection === 'overview'" class="space-y-8">
+        <div v-else-if="activeSection === 'overview'" class="space-y-8">
           <!-- Stats -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
             <div v-for="(stat, idx) in stats" :key="stat.label"
-              class="list-item bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-navy-200 transition-all duration-200 hover:-translate-y-1"
+              class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-navy-200 transition-all duration-200 hover:-translate-y-1"
               :style="{ '--delay': `${idx * 0.05}s` }">
               <div class="flex items-center justify-between mb-3">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-200" :class="stat.bg">
@@ -101,7 +131,7 @@
                 </div>
               </div>
               <div class="text-3xl font-extrabold text-navy-700">{{ stat.value }}</div>
-              <div class="text-gray-400 text-sm mt-1">{{ stat.label }}</div>
+              <div class="text-gray-500 text-sm mt-1">{{ stat.label }}</div>
             </div>
           </div>
 
@@ -111,7 +141,7 @@
               <h2 class="font-bold text-navy-700">Recent Sourcing Requests</h2>
               <button @click="setSection('requests')" class="text-sm text-gold-500 hover:text-gold-600 font-medium">View all</button>
             </div>
-            <div v-if="requests.length === 0" class="px-6 py-12 text-center text-gray-400 text-sm">No sourcing requests yet.</div>
+            <div v-if="requests.length === 0" class="px-6 py-12 text-center text-gray-500 text-sm">No sourcing requests yet.</div>
             <div v-else>
               <div v-for="req in requests.slice(0,3)" :key="req.id"
                 class="px-6 py-4 border-b border-gray-50 last:border-0 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer"
@@ -121,8 +151,11 @@
                     <svg class="w-5 h-5 text-navy-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                   </div>
                   <div>
-                    <div class="font-semibold text-navy-700 text-sm">{{ req.title }}</div>
-                    <div class="text-gray-400 text-xs mt-0.5">Qty: {{ req.quantity.toLocaleString() }} · {{ req.destination_country }}</div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-[10px] text-gray-500">{{ req.order_id }}</span>
+                      <span class="font-semibold text-navy-700 text-sm">{{ req.title }}</span>
+                    </div>
+                    <div class="text-gray-500 text-xs mt-0.5">Qty: {{ req.quantity.toLocaleString() }} · {{ req.destination_country }}</div>
                   </div>
                 </div>
                 <StatusBadge :status="req.status" />
@@ -151,10 +184,10 @@
         <div v-if="activeSection === 'requests'" class="space-y-4">
           <div v-if="requests.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
             <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <svg class="w-8 h-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
             <h3 class="font-bold text-gray-700 mb-1">No sourcing requests yet</h3>
-            <p class="text-gray-400 text-sm mb-6">Tell us what you need and we'll find the right suppliers.</p>
+            <p class="text-gray-500 text-sm mb-6">Tell us what you need and we'll find the right suppliers.</p>
             <button @click="showNewRequest = true" class="btn-primary text-sm px-8">Start Your First Request</button>
           </div>
 
@@ -164,18 +197,19 @@
             <div class="flex items-start justify-between gap-4">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-3 mb-2">
+                  <span class="font-mono text-xs font-bold text-gray-500 flex-shrink-0">{{ req.order_id }}</span>
                   <h3 class="font-bold text-navy-700 truncate">{{ req.title }}</h3>
                   <StatusBadge :status="req.status" />
                 </div>
                 <p class="text-gray-500 text-sm line-clamp-2">{{ req.description }}</p>
-                <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-400">
+                <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
                   <span>Qty: <strong class="text-gray-600">{{ req.quantity.toLocaleString() }}</strong></span>
                   <span v-if="req.target_price">Budget: <strong class="text-gray-600">{{ req.currency }} {{ req.target_price }}/unit</strong></span>
                   <span v-if="req.destination_country">To: <strong class="text-gray-600">{{ req.destination_country }}</strong></span>
                   <span v-if="req.deadline">Deadline: <strong class="text-gray-600">{{ fmtDate(req.deadline) }}</strong></span>
                 </div>
               </div>
-              <div class="flex items-center gap-4 flex-shrink-0 text-xs text-gray-400">
+              <div class="flex items-center gap-4 flex-shrink-0 text-xs text-gray-500">
                 <div class="text-center">
                   <div class="text-lg font-bold text-navy-700">{{ req.quotes?.length || 0 }}</div>
                   <div>Quotes</div>
@@ -192,26 +226,45 @@
         <!-- ── 3. Quotes ── -->
         <div v-if="activeSection === 'quotes'" class="space-y-4">
           <div v-if="quotes.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
-            <p class="text-gray-400 text-sm">No quotes received yet. Submit a sourcing request to get started.</p>
+            <p class="text-gray-500 text-sm">No quotes received yet. Submit a sourcing request to get started.</p>
           </div>
           <div v-for="q in quotes" :key="q.id" class="card-hover bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-start justify-between gap-4 mb-4">
               <div>
                 <div class="flex items-center gap-2 mb-1">
-                  <h3 class="font-bold text-navy-700">{{ q.supplier_name }}</h3>
+                  <span class="font-mono font-bold text-gold-700 bg-gold-50 px-2.5 py-1 rounded-lg text-sm">{{ q.supplier?.supplier_code || 'SUP-?' }}</span>
                   <StatusBadge :status="q.status" />
                 </div>
-                <p class="text-gray-400 text-xs">For: {{ q.sourcing_request?.title }}</p>
-              </div>
-              <div class="text-right">
-                <div class="text-2xl font-extrabold text-navy-700">{{ q.currency }} {{ Number(q.unit_price).toFixed(2) }}</div>
-                <div class="text-gray-400 text-xs">per unit</div>
+                <p class="text-gray-500 text-xs">For: {{ q.sourcing_request?.title }}</p>
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-4 py-4 border-y border-gray-100 text-sm">
-              <div><div class="text-gray-400 text-xs mb-0.5">Total</div><div class="font-semibold text-navy-700">{{ q.currency }} {{ Number(q.total_price).toLocaleString() }}</div></div>
-              <div><div class="text-gray-400 text-xs mb-0.5">MOQ</div><div class="font-semibold text-navy-700">{{ q.moq.toLocaleString() }} units</div></div>
-              <div><div class="text-gray-400 text-xs mb-0.5">Lead Time</div><div class="font-semibold text-navy-700">{{ q.lead_time }}</div></div>
+            <div class="grid grid-cols-2 gap-4 py-4 border-y border-gray-100 text-sm">
+              <div><div class="text-gray-500 text-xs mb-0.5">MOQ</div><div class="font-semibold text-navy-700">{{ q.moq.toLocaleString() }} units</div></div>
+              <div><div class="text-gray-500 text-xs mb-0.5">Lead Time</div><div class="font-semibold text-navy-700">{{ q.lead_time }}</div></div>
+            </div>
+            <div v-if="q.payment_method" class="flex items-center gap-2 mt-4 py-3 px-4 bg-gray-50 rounded-xl border border-gray-100">
+              <svg class="w-4 h-4 text-navy-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+              </svg>
+              <span class="text-xs text-gray-500">Payment Method:</span>
+              <span class="text-sm font-semibold text-navy-700">{{ PAYMENT_METHODS[q.payment_method]?.label }}</span>
+              <div class="relative group ml-auto flex-shrink-0">
+                <button class="w-5 h-5 rounded-full bg-gray-200 hover:bg-navy-100 text-gray-500 hover:text-navy-700 text-[11px] font-bold flex items-center justify-center transition-colors cursor-help">?</button>
+                <div class="absolute right-0 bottom-7 w-80 bg-navy-900 text-white text-xs rounded-2xl p-4 shadow-2xl invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 z-20 leading-relaxed pointer-events-none">
+                  <div class="font-bold text-gold-300 mb-2">{{ PAYMENT_METHODS[q.payment_method]?.label }}</div>
+                  <p>{{ PAYMENT_METHODS[q.payment_method]?.description }}</p>
+                  <div class="absolute bottom-[-6px] right-1.5 w-3 h-3 bg-navy-900 rotate-45"></div>
+                </div>
+              </div>
+            </div>
+            <div v-if="q.quote_file_path" class="mt-3">
+              <a :href="`/storage/${q.quote_file_path}`" target="_blank"
+                class="inline-flex items-center gap-2 text-sm font-semibold text-navy-600 hover:text-navy-800 bg-navy-50 hover:bg-navy-100 px-4 py-2.5 rounded-xl transition-colors border border-navy-100">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Download Quote File
+              </a>
             </div>
             <p v-if="q.notes" class="text-gray-500 text-sm mt-4">{{ q.notes }}</p>
             <div v-if="q.status === 'pending'" class="flex gap-3 mt-4">
@@ -230,26 +283,11 @@
           <QuoteKanban />
         </div>
 
-        <!-- ── 5. Analytics Dashboard ── -->
-        <div v-if="activeSection === 'analytics'" class="space-y-4">
-          <AnalyticsDashboard />
-        </div>
-
-        <!-- ── 6. Price Comparison ── -->
-        <div v-if="activeSection === 'comparison'" class="space-y-4">
-          <PriceComparison />
-        </div>
-
-        <!-- ── 7. Supplier Performance ── -->
-        <div v-if="activeSection === 'suppliers'" class="space-y-4">
-          <SupplierPerformance />
-        </div>
-
-        <!-- ── 8. Shipments ── -->
+        <!-- ── 5. Shipments ── -->
         <div v-if="activeSection === 'shipments'" class="space-y-4">
           <div class="flex justify-end">
             <button @click="loadShipments()"
-              class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-navy-700 transition-colors">
+              class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-navy-700 transition-colors">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
@@ -257,7 +295,7 @@
             </button>
           </div>
           <div v-if="shipments.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
-            <p class="text-gray-400 text-sm">No shipments yet. Details will appear here once your order is confirmed.</p>
+            <p class="text-gray-500 text-sm">No shipments yet. Details will appear here once your order is confirmed.</p>
           </div>
           <div v-for="s in shipments" :key="s.id" class="group bg-white rounded-2xl shadow-md hover:shadow-xl border border-gray-100 hover:border-navy-200 p-6 transition-all duration-300 hover:-translate-y-1">
 
@@ -285,18 +323,18 @@
                 </div>
               </div>
               <div v-if="s.tracking_number" class="text-right flex-shrink-0 bg-gray-50 rounded-xl p-3 group-hover:bg-navy-50 transition-colors">
-                <div class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1">Tracking</div>
+                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1">Tracking</div>
                 <div class="flex items-center gap-1.5 justify-end">
                   <span class="font-mono text-sm font-bold text-navy-700 group-hover:text-navy-900">{{ s.tracking_number }}</span>
                   <button @click="copyTracking(s.tracking_number)"
-                    class="p-1.5 text-gray-400 hover:text-gold-500 hover:bg-gold-50 rounded-lg transition-all" title="Copy tracking number">
+                    class="p-1.5 text-gray-500 hover:text-gold-500 hover:bg-gold-50 rounded-lg transition-all" title="Copy tracking number">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                   </button>
                 </div>
               </div>
-              <div v-else class="text-xs text-gray-400 flex-shrink-0 bg-gray-50 rounded-lg px-3 py-2 font-medium">Tracking pending</div>
+              <div v-else class="text-xs text-gray-500 flex-shrink-0 bg-gray-50 rounded-lg px-3 py-2 font-medium">Tracking pending</div>
             </div>
 
             <!-- Route visual with better styling -->
@@ -313,19 +351,19 @@
                     <div class="mx-3 flex-shrink-0">
                       <!-- Air -->
                       <svg v-if="s.method === 'air'" class="w-7 h-7 p-1.5 rounded-full transition-all duration-300"
-                        :class="s.status !== 'pending' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'"
+                        :class="s.status !== 'pending' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'"
                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                       </svg>
                       <!-- Sea -->
                       <svg v-else-if="s.method === 'sea'" class="w-7 h-7 p-1.5 rounded-full transition-all duration-300"
-                        :class="s.status !== 'pending' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'"
+                        :class="s.status !== 'pending' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'"
                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 17c1.5 1 4.5 1 6 0s4.5-1 6 0 4.5 1 6 0M5 17l2-7h10l2 7M10 10V7h4v3"/>
                       </svg>
                       <!-- Express/Truck -->
                       <svg v-else class="w-7 h-7 p-1.5 rounded-full transition-all duration-300"
-                        :class="s.status !== 'pending' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-400'"
+                        :class="s.status !== 'pending' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'"
                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z"/>
@@ -345,32 +383,30 @@
               </div>
             </div>
 
-            <!-- Progress steps with enhanced styling -->
-            <div class="relative mt-6 h-20">
-              <!-- Background line -->
-              <div class="absolute left-3.5 right-3.5 top-1/2 transform -translate-y-1/2 h-1 bg-gray-300 rounded-full"></div>
-              <!-- Filled progress line -->
-              <div class="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-1 bg-blue-500 rounded-full transition-all duration-500"
-                :style="{ width: getProgressWidth(s.status) }"></div>
-              <div class="flex items-center justify-between relative z-10 h-full">
-                <div v-for="(step, i) in shipmentSteps" :key="step.key" class="flex flex-col items-center">
-                  <!-- Status circle -->
+            <!-- Progress steps -->
+            <div class="flex items-start mt-6">
+              <template v-for="(step, i) in shipmentSteps" :key="step.key">
+                <div class="flex flex-col items-center flex-shrink-0">
                   <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300"
-                    :class="stepReached(s.status, step.key) 
+                    :class="stepReached(s.status, step.key)
                       ? 'bg-blue-500 border-blue-500 text-white'
-                      : 'border-gray-300 text-gray-400 bg-white'">
+                      : 'border-gray-300 text-gray-500 bg-white'">
                     <svg v-if="stepReached(s.status, step.key)" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                     </svg>
                     <span v-else class="text-[11px] font-bold">{{ i + 1 }}</span>
                   </div>
-                  <!-- Step label -->
-                  <div class="text-[11px] mt-2 text-center font-semibold leading-tight px-2 h-8 flex items-center justify-center"
+                  <div class="text-[11px] mt-2 text-center font-semibold leading-tight w-14"
                     :class="stepReached(s.status, step.key) ? 'text-gray-700' : 'text-gray-500'">
                     {{ step.label }}
                   </div>
                 </div>
-              </div>
+                <div v-if="i < shipmentSteps.length - 1"
+                  class="flex-1 h-0.5 mt-4 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-blue-500 rounded-full transition-all duration-500"
+                    :class="stepReached(s.status, shipmentSteps[i + 1].key) ? 'w-full' : 'w-0'" />
+                </div>
+              </template>
             </div>
 
           </div>
@@ -399,7 +435,7 @@
             <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            <p class="text-gray-400 text-sm">No {{ docSection === 'all' ? '' : docSection + ' ' }}documents yet.</p>
+            <p class="text-gray-500 text-sm">No {{ docSection === 'all' ? '' : docSection + ' ' }}documents yet.</p>
             <button @click="showDocUpload = true" class="mt-3 text-xs text-navy-600 hover:text-navy-800 font-medium">Upload one →</button>
           </div>
 
@@ -414,22 +450,22 @@
               </div>
               <div class="flex-1 min-w-0">
                 <div class="font-semibold text-navy-700 text-sm truncate">{{ doc.name }}</div>
-                <div class="text-gray-400 text-xs mt-0.5">
+                <div class="text-gray-500 text-xs mt-0.5">
                   {{ docTypeLabel(doc.type) }} · {{ fmtSize(doc.size) }}
                   <span v-if="doc.sourcing_request"> · {{ doc.sourcing_request.title }}</span>
                 </div>
               </div>
-              <div class="text-xs text-gray-400 flex-shrink-0">{{ fmtDate(doc.created_at) }}</div>
+              <div class="text-xs text-gray-500 flex-shrink-0">{{ fmtDate(doc.created_at) }}</div>
               <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <a v-if="doc.url" :href="doc.url" target="_blank"
-                  class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="View">
+                  class="p-2 text-gray-500 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="View">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </a>
                 <a v-if="doc.url" :href="doc.url" download
-                  class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="Download">
+                  class="p-2 text-gray-500 hover:text-navy-700 hover:bg-gray-100 rounded-lg transition-colors" title="Download">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 </a>
-                <button @click="deleteDoc(doc)" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                <button @click="deleteDoc(doc)" class="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
               </div>
@@ -438,101 +474,124 @@
         </div>
 
         <!-- ── 10. Messages ── -->
-        <div v-if="activeSection === 'messages'" class="flex gap-6 h-full" style="max-height: calc(100vh - 130px)">
-          <!-- Request list -->
-          <div class="w-72 flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-y-auto">
-            <div class="px-4 py-3 border-b border-gray-100">
-              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Conversations</div>
-            </div>
-            <div v-if="requests.length === 0" class="p-4 text-center text-gray-400 text-sm">No requests yet.</div>
-            <button v-for="req in requests" :key="req.id"
-              @click="selectConversation(req)"
-              class="w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 transition-colors"
-              :class="selectedRequest?.id === req.id ? 'bg-navy-50' : 'hover:bg-gray-50'">
-              <div class="font-semibold text-navy-700 text-sm truncate">{{ req.title }}</div>
-              <div class="flex items-center gap-2 mt-1">
-                <StatusBadge :status="req.status" class="scale-90 origin-left" />
-              </div>
-            </button>
-          </div>
+        <div v-else-if="activeSection === 'messages'" class="h-full -m-4 sm:-m-6 lg:-m-8">
+          <div class="flex h-full">
 
-          <!-- Chat area -->
-          <div class="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div v-if="!selectedRequest" class="flex-1 flex items-center justify-center text-gray-400 text-sm">
-              Select a conversation to view messages
-            </div>
-            <template v-else>
-              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <div>
-                  <h3 class="font-bold text-navy-700 text-sm">{{ selectedRequest.title }}</h3>
-                  <div class="text-gray-400 text-xs mt-0.5">Trivalo Sourcing team</div>
-                </div>
-                <StatusBadge :status="selectedRequest.status" />
+            <!-- Conversation list -->
+            <div class="w-64 lg:w-72 border-r border-gray-100 bg-white flex flex-col flex-shrink-0">
+              <div class="px-4 py-3 border-b border-gray-100">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Conversations</div>
               </div>
-
-              <!-- Messages -->
-              <div class="flex-1 overflow-y-auto p-6 space-y-4" ref="messagesEl">
-                <div v-if="messages.length === 0" class="text-center text-gray-400 text-sm py-8">No messages yet. Start the conversation below.</div>
-                <div v-for="msg in messages" :key="msg.id"
-                  class="flex gap-3"
-                  :class="msg.is_from_team ? '' : 'flex-row-reverse'">
-                  <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
-                    :class="msg.is_from_team ? 'bg-navy-700 text-gold-400' : 'bg-gold-400 text-navy-700'">
-                    {{ msg.is_from_team ? 'T' : initials.charAt(0) }}
+              <div class="flex-1 overflow-y-auto">
+                <div v-if="requests.length === 0" class="p-6 text-center text-gray-500 text-sm">No requests yet.</div>
+                <button v-for="req in requests" :key="req.id"
+                  @click="selectConversation(req)"
+                  class="w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 transition-colors"
+                  :class="selectedRequest?.id === req.id ? 'bg-navy-50 border-l-2 border-l-gold-400' : 'hover:bg-gray-50'">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="font-semibold text-navy-700 text-sm truncate">{{ req.title }}</div>
+                    <span v-if="unreadCounts[req.id]" class="flex-shrink-0 bg-gold-400 text-navy-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                      {{ unreadCounts[req.id] }}
+                    </span>
                   </div>
-                  <div class="max-w-[75%]">
-                    <div class="text-xs text-gray-400 mb-1" :class="msg.is_from_team ? '' : 'text-right'">
-                      {{ msg.is_from_team ? 'Trivalo Team' : authStore.user?.name?.split(' ')[0] }} · {{ fmtTime(msg.created_at) }}
+                  <div class="flex items-center gap-2 mt-1">
+                    <StatusBadge :status="req.status" class="scale-90 origin-left" />
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chat area -->
+            <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
+              <div v-if="!selectedRequest" class="flex-1 flex flex-col items-center justify-center gap-3 text-gray-500">
+                <svg class="w-10 h-10 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span class="text-sm">Select a conversation to view messages</span>
+              </div>
+              <template v-else>
+                <!-- Chat header -->
+                <div class="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+                  <div>
+                    <h3 class="font-bold text-navy-700 text-sm">{{ selectedRequest.title }}</h3>
+                    <div class="text-gray-500 text-xs mt-0.5">Trivalo Sourcing team</div>
+                  </div>
+                  <StatusBadge :status="selectedRequest.status" />
+                </div>
+
+                <!-- Messages -->
+                <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4" ref="messagesEl">
+                  <div v-if="messages.length === 0" class="text-center text-gray-500 text-sm py-8">No messages yet. Start the conversation below.</div>
+                  <div v-for="msg in messages" :key="msg.id"
+                    class="flex gap-3"
+                    :class="msg.is_from_team ? '' : 'flex-row-reverse'">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
+                      :class="msg.is_from_team ? 'bg-navy-700 text-gold-400' : 'bg-gold-400 text-navy-700'">
+                      {{ msg.is_from_team ? 'T' : initials.charAt(0) }}
                     </div>
-                    <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed space-y-2"
-                      :class="msg.is_from_team
-                        ? 'bg-gray-100 text-gray-700 rounded-tl-none'
-                        : 'bg-navy-700 text-white rounded-tr-none'">
-                      <p v-if="msg.body">{{ msg.body }}</p>
-                      <!-- Image attachment -->
-                      <a v-if="msg.attachment_path && isImage(msg.attachment_mime)"
-                        :href="msg.attachment_path" target="_blank">
-                        <img :src="msg.attachment_path" :alt="msg.attachment_name"
-                          class="max-w-[200px] rounded-lg border border-white/20 cursor-pointer hover:opacity-90 transition-opacity">
-                      </a>
-                      <!-- File attachment -->
-                      <a v-else-if="msg.attachment_path"
-                        :href="msg.attachment_path" target="_blank" download
-                        class="flex items-center gap-2 underline underline-offset-2 opacity-80 hover:opacity-100">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                        {{ msg.attachment_name }}
-                      </a>
+                    <div class="max-w-[75%]">
+                      <div class="text-xs text-gray-500 mb-1" :class="msg.is_from_team ? '' : 'text-right'">
+                        {{ msg.is_from_team ? 'Trivalo Team' : authStore.user?.name?.split(' ')[0] }} · {{ fmtTime(msg.created_at) }}
+                      </div>
+                      <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed space-y-2"
+                        :class="msg.is_from_team
+                          ? 'bg-white text-gray-700 rounded-tl-none shadow-sm'
+                          : 'bg-navy-700 text-white rounded-tr-none'">
+                        <p v-if="msg.body">{{ msg.body }}</p>
+                        <a v-if="msg.attachment_path && isImage(msg.attachment_mime)"
+                          :href="msg.attachment_path" target="_blank">
+                          <img :src="msg.attachment_path" :alt="msg.attachment_name"
+                            class="max-w-[200px] rounded-lg border border-white/20 cursor-pointer hover:opacity-90 transition-opacity">
+                        </a>
+                        <a v-else-if="msg.attachment_path"
+                          :href="msg.attachment_path" target="_blank" download
+                          class="flex items-center gap-2 underline underline-offset-2 opacity-80 hover:opacity-100">
+                          <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                          {{ msg.attachment_name }}
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Input -->
-              <div class="border-t border-gray-100 p-4 space-y-2">
-                <!-- File preview -->
-                <div v-if="chatFile" class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-600">
-                  <svg class="w-4 h-4 text-navy-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                  <span class="flex-1 truncate">{{ chatFile.name }}</span>
-                  <button @click="chatFile = null; chatFileInput && (chatFileInput.value = '')" class="text-gray-400 hover:text-red-500 transition-colors">×</button>
+                <!-- Typing indicator -->
+                <div v-if="remoteTyping" class="px-6 pb-2 pt-1 flex items-center gap-2 text-xs text-gray-500 bg-gray-50">
+                  <div class="flex gap-0.5 items-center">
+                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+                  </div>
+                  Trivalo Team is typing…
                 </div>
-                <div class="flex gap-3">
-                  <input ref="chatFileInput" type="file" class="hidden" @change="chatFile = $event.target.files[0]">
-                  <button type="button" @click="chatFileInput.click()"
-                    class="p-2 text-gray-400 hover:text-navy-700 hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0" title="Attach file">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                  </button>
-                  <input v-model="newMessage" type="text"
-                    class="flex-1 rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm"
-                    placeholder="Type your message…"
-                    @keydown.enter.prevent="sendMessage">
-                  <button @click="sendMessage" :disabled="(!newMessage.trim() && !chatFile) || sendingMessage"
-                    class="btn-primary text-sm px-5"
-                    :class="{ 'opacity-50 cursor-not-allowed': (!newMessage.trim() && !chatFile) }">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                  </button>
+
+                <!-- Input -->
+                <div class="bg-white border-t border-gray-100 px-4 py-4 flex-shrink-0 space-y-2">
+                  <div v-if="chatFile" class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-600">
+                    <svg class="w-4 h-4 text-navy-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    <span class="flex-1 truncate">{{ chatFile.name }}</span>
+                    <button @click="chatFile = null; chatFileInput && (chatFileInput.value = '')" class="text-gray-500 hover:text-red-500 transition-colors">×</button>
+                  </div>
+                  <div class="flex gap-3">
+                    <input ref="chatFileInput" type="file" class="hidden" @change="chatFile = $event.target.files[0]">
+                    <button type="button" @click="chatFileInput.click()"
+                      class="p-2 text-gray-500 hover:text-navy-700 hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0" title="Attach file">
+                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    </button>
+                    <input v-model="newMessage" type="text"
+                      class="flex-1 rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm"
+                      placeholder="Type your message…"
+                      @input="onTyping"
+                      @keydown.enter.prevent="sendMessage">
+                    <button @click="sendMessage" :disabled="(!newMessage.trim() && !chatFile) || sendingMessage"
+                      class="btn-primary text-sm px-5"
+                      :class="{ 'opacity-50 cursor-not-allowed': (!newMessage.trim() && !chatFile) }">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </template>
+              </template>
+            </div>
+
           </div>
         </div>
 
@@ -545,7 +604,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
           <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
             <h2 class="text-lg font-bold text-navy-700">New Sourcing Request</h2>
-            <button @click="showNewRequest = false" class="text-gray-400 hover:text-gray-600">
+            <button @click="showNewRequest = false" class="text-gray-500 hover:text-gray-600">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
@@ -590,7 +649,7 @@
 
             <!-- Product images -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Example Images <span class="text-gray-400 font-normal">(optional, up to 10)</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Example Images <span class="text-gray-500 font-normal">(optional, up to 10)</span></label>
               <div
                 class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-navy-400 transition-colors"
                 @click="$refs.reqImageInput.click()"
@@ -601,7 +660,7 @@
                   <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                   </svg>
-                  <p class="text-xs text-gray-400">Click or drag images here</p>
+                  <p class="text-xs text-gray-500">Click or drag images here</p>
                 </div>
                 <div v-else class="flex flex-wrap gap-2">
                   <div v-for="(src, i) in reqImages" :key="i" class="relative group">
@@ -610,7 +669,7 @@
                       class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                   </div>
                   <div class="w-16 h-16 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center cursor-pointer hover:border-navy-400 transition-colors" @click.stop="$refs.reqImageInput.click()">
-                    <span class="text-gray-400 text-xl">+</span>
+                    <span class="text-gray-500 text-xl">+</span>
                   </div>
                 </div>
               </div>
@@ -634,7 +693,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
           <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
             <h2 class="text-lg font-bold text-navy-700">Upload Document</h2>
-            <button @click="showDocUpload = false" class="text-gray-400 hover:text-gray-600">
+            <button @click="showDocUpload = false" class="text-gray-500 hover:text-gray-600">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
@@ -657,7 +716,7 @@
               <input v-model="docForm.custom_type" type="text" class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm" placeholder="e.g. Supplier Agreement">
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5">Document Name <span class="text-gray-400 font-normal">(optional)</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Document Name <span class="text-gray-500 font-normal">(optional)</span></label>
               <input v-model="docForm.name" type="text" class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm" placeholder="Leave blank to use file name">
             </div>
             <div>
@@ -669,12 +728,12 @@
                   @change="docForm.file = $event.target.files[0]">
                 <div v-if="!docForm.file" class="py-2">
                   <svg class="w-7 h-7 text-gray-300 mx-auto mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                  <p class="text-xs text-gray-400">Click to select file (PDF, Word, Excel, images)</p>
+                  <p class="text-xs text-gray-500">Click to select file (PDF, Word, Excel, images)</p>
                 </div>
                 <div v-else class="flex items-center gap-2 justify-center text-sm text-navy-700 font-medium">
                   <svg class="w-5 h-5 text-navy-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                   {{ docForm.file.name }}
-                  <button type="button" @click.stop="docForm.file = null" class="text-gray-400 hover:text-red-500 ml-1">×</button>
+                  <button type="button" @click.stop="docForm.file = null" class="text-gray-500 hover:text-red-500 ml-1">×</button>
                 </div>
               </div>
             </div>
@@ -698,20 +757,23 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
           <div class="px-8 py-5 border-b border-gray-100 flex items-center justify-between">
             <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-mono text-xs font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg">{{ selectedReqDetail.order_id }}</span>
+                <StatusBadge :status="selectedReqDetail.status" />
+              </div>
               <h2 class="text-lg font-bold text-navy-700">{{ selectedReqDetail.title }}</h2>
-              <StatusBadge :status="selectedReqDetail.status" class="mt-1" />
             </div>
-            <button @click="selectedReqDetail = null" class="text-gray-400 hover:text-gray-600">
+            <button @click="selectedReqDetail = null" class="text-gray-500 hover:text-gray-600">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
           <div class="px-8 py-6 space-y-5 text-sm">
             <p class="text-gray-600 leading-relaxed">{{ selectedReqDetail.description }}</p>
             <div class="grid grid-cols-2 gap-4 py-4 border-y border-gray-100">
-              <div><span class="text-gray-400">Quantity:</span> <strong>{{ selectedReqDetail.quantity?.toLocaleString() }}</strong></div>
-              <div v-if="selectedReqDetail.target_price"><span class="text-gray-400">Target:</span> <strong>{{ selectedReqDetail.currency }} {{ selectedReqDetail.target_price }}/unit</strong></div>
-              <div v-if="selectedReqDetail.destination_country"><span class="text-gray-400">Destination:</span> <strong>{{ selectedReqDetail.destination_country }}</strong></div>
-              <div v-if="selectedReqDetail.deadline"><span class="text-gray-400">Deadline:</span> <strong>{{ fmtDate(selectedReqDetail.deadline) }}</strong></div>
+              <div><span class="text-gray-500">Quantity:</span> <strong>{{ selectedReqDetail.quantity?.toLocaleString() }}</strong></div>
+              <div v-if="selectedReqDetail.target_price"><span class="text-gray-500">Target:</span> <strong>{{ selectedReqDetail.currency }} {{ selectedReqDetail.target_price }}/unit</strong></div>
+              <div v-if="selectedReqDetail.destination_country"><span class="text-gray-500">Destination:</span> <strong>{{ selectedReqDetail.destination_country }}</strong></div>
+              <div v-if="selectedReqDetail.deadline"><span class="text-gray-500">Deadline:</span> <strong>{{ fmtDate(selectedReqDetail.deadline) }}</strong></div>
             </div>
             <div v-if="selectedReqDetail.notes" class="bg-gray-50 rounded-xl p-4 text-gray-500">{{ selectedReqDetail.notes }}</div>
             <div class="flex gap-3 pt-2">
@@ -727,6 +789,7 @@
       </div>
     </Transition>
 
+    <NotificationToast />
   </div>
 </template>
 
@@ -736,10 +799,10 @@ import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import LoadingSkeleton from '@/components/LoadingSkeleton.vue'
+import NotificationToast from '@/components/NotificationToast.vue'
 import QuoteKanban from '@/components/QuoteKanban.vue'
-import PriceComparison from '@/components/PriceComparison.vue'
-import AnalyticsDashboard from '@/components/AnalyticsDashboard.vue'
-import SupplierPerformance from '@/components/SupplierPerformance.vue'
+import echo from '@/echo'
+import { useNotifications } from '@/composables/useNotifications'
 
 const authStore = useAuthStore()
 const router    = useRouter()
@@ -747,7 +810,9 @@ const route     = useRoute()
 
 if (!authStore.isAuthenticated) router.push('/auth')
 
-const sectionIds = ['overview', 'requests', 'quotes', 'kanban', 'analytics', 'comparison', 'suppliers', 'shipments', 'documents', 'messages']
+const { push: notify } = useNotifications()
+
+const sectionIds = ['overview', 'requests', 'quotes', 'kanban', 'shipments', 'documents', 'messages']
 
 function normalizeSection(section) {
   return typeof section === 'string' && sectionIds.includes(section) ? section : 'overview'
@@ -757,12 +822,21 @@ function setSection(section) {
   const nextSection = normalizeSection(section)
   activeSection.value = nextSection
 
-  if (route.query.section !== nextSection) {
+  const currentSection = normalizeSection(route.query.section)
+  if (currentSection !== nextSection) {
     router.replace({
       path: '/dashboard',
       query: nextSection === 'overview' ? {} : { section: nextSection },
     })
   }
+}
+
+// ── Payment methods ────────────────────────────────
+const PAYMENT_METHODS = {
+  tt: { label: 'Telegraphic Transfer (T/T)', description: 'A Telegraphic Transfer (T/T) is a direct, electronic bank-to-bank wire transfer and stands as the most common payment method in international trade. It operates on a milestone basis—typically split into an upfront deposit (e.g., 30%) to initiate factory production, with the remaining balance (e.g., 70%) settled either right before shipment or upon presentation of the Bill of Lading. This method is highly favored for its speed, low transaction fees, and global accessibility.' },
+  lc: { label: 'Letter of Credit (L/C)', description: 'A Letter of Credit (L/C) is a formal, legally binding commitment issued by the buyer\'s bank guaranteeing that full payment will be made to the seller\'s bank, provided all strictly specified shipping, customs, and quality documents are presented exactly as agreed. Because the funds are securely held and verified by major banking institutions, an L/C offers the highest level of financial security for both parties, making it the industry standard for high-value cargo and strictly regulated import lanes.' },
+  dp: { label: 'Documents Against Payment (D/P)', description: 'Documents Against Payment (D/P) is a bank-mediated arrangement where the seller retains complete control over the shipment until payment is secured. Once the goods are shipped, the seller sends the official transport documents (required to claim the goods at the destination port) to their bank, which forwards them to the buyer\'s local bank. The buyer\'s bank will only release these vital ownership documents to the buyer after the full invoice amount has been paid in cash.' },
+  da: { label: 'Documents Against Acceptance (D/A)', description: 'Documents Against Acceptance (D/A) is a credit-extended alternative to traditional cash transactions. Under this structure, the buyer\'s bank releases the crucial shipping and ownership documents to the buyer as soon as they sign a formal bill of exchange—a legal promise to pay the invoice at a specific future date (typically Net 30, 60, or 90 days). This method provides maximum financial flexibility for buyers to clear and sell their inventory before the payment deadline.' },
 }
 
 // ── Icons ─────────────────────────────────────────
@@ -773,8 +847,6 @@ const IconDoc        = mkIcon('M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5
 const IconTruck      = mkIcon('M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h8zm0 0l2-5h4l2 5H13z')
 const IconFolder     = mkIcon('M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z')
 const IconChat       = mkIcon('M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z')
-const IconChart      = mkIcon('M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z')
-const IconDollar     = mkIcon('M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z')
 const IconKanban     = mkIcon('M9 4H5a2 2 0 00-2 2v14a2 2 0 002 2h4m0-18v18m0-18h10a2 2 0 012 2v14a2 2 0 01-2 2h-10')
 
 const statusMap = {
@@ -805,6 +877,8 @@ const StatusBadge = defineComponent({
 })
 
 // ── State ─────────────────────────────────────────
+const loading          = ref(true)
+const sidebarOpen      = ref(false)
 const activeSection    = ref(normalizeSection(route.query.section))
 const requests         = ref([])
 const quotes           = ref([])
@@ -818,6 +892,10 @@ const showNewRequest   = ref(false)
 const newMessage       = ref('')
 const sendingMessage   = ref(false)
 const messagesEl       = ref(null)
+const unreadCounts     = reactive({})   // { [requestId]: number }
+const remoteTyping     = ref(false)     // true when the other party is typing
+let typingTimer        = null
+let typingEmitTimer    = null
 
 const newReq = reactive({ title: '', description: '', quantity: null, target_price: null, currency: 'USD', destination_country: '', deadline: '', notes: '' })
 const reqLoading    = ref(false)
@@ -853,25 +931,23 @@ const initials = computed(() => {
 const pendingQuotes = computed(() => quotes.value.filter(q => q.status === 'pending'))
 const totalDocuments = computed(() => documents.value.length)
 const totalMessages = computed(() => messages.value.length)
+const totalUnread   = computed(() => Object.values(unreadCounts).reduce((a, b) => a + b, 0))
 
 const navItems = computed(() => [
   { id: 'overview',  label: 'Overview',          icon: IconOverview, description: 'Your activity at a glance' },
   { id: 'requests',  label: 'Sourcing Requests',  icon: IconSearch,   description: 'Manage your product sourcing requests', badge: requests.value.filter(r => r.status === 'submitted').length || null },
   { id: 'quotes',    label: 'Quotes',             icon: IconDoc,      description: 'Review supplier quotes', badge: pendingQuotes.value.length || null },
   { id: 'kanban',    label: 'Quote Workflow',     icon: IconKanban,   description: 'Kanban view of quote decisions' },
-  { id: 'analytics', label: 'Analytics',          icon: IconChart,    description: 'Performance metrics & insights' },
-  { id: 'comparison',label: 'Price Comparison',   icon: IconDollar,   description: 'Compare supplier prices' },
-  { id: 'suppliers', label: 'Supplier Performance', icon: IconTruck,   description: 'Supplier metrics & ratings' },
   { id: 'shipments', label: 'Shipments',          icon: IconTruck,    description: 'Track your shipments in real-time' },
   { id: 'documents', label: 'Documents',          icon: IconFolder,   description: 'Inspection reports, invoices & more', badge: totalDocuments.value || null },
-  { id: 'messages',  label: 'Messages',           icon: IconChat,     description: 'Communicate with the Trivalo team', badge: totalMessages.value || null },
+  { id: 'messages',  label: 'Messages',           icon: IconChat,     description: 'Communicate with the Trivalo team', badge: totalUnread.value || null },
 ])
 
 const currentSection = computed(() => navItems.value.find(n => n.id === activeSection.value) || navItems.value[0])
 
 const stats = computed(() => [
   { label: 'Active Requests',      value: dashStats.value.active_requests    ?? 0, icon: IconSearch, bg: 'bg-blue-50',   color: 'text-blue-500' },
-  { label: 'Pending Quotes',       value: dashStats.value.pending_quotes     ?? 0, icon: IconDoc,    bg: 'bg-gold-50',   color: 'text-gold-500' },
+  { label: 'Pending Quotes',       value: dashStats.value.pending_quotes     ?? 0, icon: IconDoc,    bg: 'bg-gold-50',   color: 'text-gold-700' },
   { label: 'Shipments In Transit', value: dashStats.value.shipments_in_transit ?? 0, icon: IconTruck, bg: 'bg-purple-50', color: 'text-purple-500' },
   { label: 'Total Documents',      value: dashStats.value.total_documents    ?? 0, icon: IconFolder, bg: 'bg-green-50',  color: 'text-green-500' },
 ])
@@ -883,11 +959,56 @@ const shipmentSteps = [
   { key: 'delivered',  label: 'Delivered' },
 ]
 
+// ── Real-time (Echo) ──────────────────────────────
+function subscribeRealtime() {
+  const userId = authStore.user?.id
+  if (!userId) return
+
+  echo.private(`user.${userId}`)
+    .listen('.quote.received', ({ quote }) => {
+      quotes.value.unshift(quote)
+      dashStats.value.pending_quotes = (dashStats.value.pending_quotes || 0) + 1
+      notify('quote', 'New quote received', quote.sourcing_request?.title || '')
+    })
+    .listen('.request.status.updated', ({ id, status, title }) => {
+      const req = requests.value.find(r => r.id === id)
+      if (req) req.status = status
+      notify('status', 'Request updated', `${title} → ${status.replace(/_/g, ' ')}`)
+    })
+    .listen('.shipment.updated', ({ shipment }) => {
+      const idx = shipments.value.findIndex(s => s.id === shipment.id)
+      if (idx !== -1) shipments.value[idx] = { ...shipments.value[idx], ...shipment }
+      else shipments.value.unshift(shipment)
+      notify('status', 'Shipment updated', shipment.sourcing_request?.title || '')
+    })
+}
+
+function subscribeToConversation(requestId) {
+  echo.private(`sourcing-request.${requestId}`)
+    .listen('.message.sent', ({ message }) => {
+      if (selectedRequest.value?.id === requestId) {
+        messages.value.push(message)
+        nextTick(scrollMessages)
+      } else {
+        unreadCounts[requestId] = (unreadCounts[requestId] || 0) + 1
+      }
+      notify('message', 'New message', message.body || '📎 Attachment')
+    })
+    .listenForWhisper('typing', () => {
+      if (selectedRequest.value?.id === requestId) {
+        remoteTyping.value = true
+        clearTimeout(typingTimer)
+        typingTimer = setTimeout(() => { remoteTyping.value = false }, 2500)
+      }
+    })
+}
+
 // ── Lifecycle ─────────────────────────────────────
 onMounted(async () => {
   setSection(route.query.section)
   document.addEventListener('visibilitychange', onVisibilityChange)
   await Promise.all([loadAll()])
+  subscribeRealtime()
   if (activeSection.value === 'shipments') startShipmentPolling()
 })
 
@@ -925,30 +1046,33 @@ function onVisibilityChange() {
 
 onUnmounted(() => {
   stopShipmentPolling()
+  clearTimeout(typingTimer)
+  clearTimeout(typingEmitTimer)
   document.removeEventListener('visibilitychange', onVisibilityChange)
+  // Leave channels without disconnecting the shared Echo singleton
+  const userId = authStore.user?.id
+  if (userId) echo.leave(`user.${userId}`)
+  subscribedConvIds.forEach(id => echo.leave(`sourcing-request.${id}`))
 })
 
 async function loadAll() {
-  const [r, q, s, d, st] = await Promise.all([
-    axios.get('/sourcing-requests'),
-    axios.get('/quotes'),
-    axios.get('/shipments'),
-    axios.get('/documents'),
-    axios.get('/dashboard/stats'),
-  ])
-  console.log('Sourcing Requests Response:', r.data)
-  console.log('Quotes Response:', q.data)
-  console.log('Shipments Response:', s.data)
-  console.log('Documents Response:', d.data)
-  console.log('Stats Response:', st.data)
-  
-  requests.value  = r.data.data || r.data
-  quotes.value    = q.data.data || q.data
-  shipments.value = s.data.data || s.data
-  documents.value = d.data.data || d.data
-  dashStats.value = st.data
-  
-  console.log('Parsed Quotes:', quotes.value)
+  loading.value = true
+  try {
+    const [r, q, s, d, st] = await Promise.all([
+      axios.get('/sourcing-requests'),
+      axios.get('/quotes'),
+      axios.get('/shipments'),
+      axios.get('/documents'),
+      axios.get('/dashboard/stats'),
+    ])
+    requests.value  = r.data.data || r.data
+    quotes.value    = q.data.data || q.data
+    shipments.value = s.data.data || s.data
+    documents.value = d.data.data || d.data
+    dashStats.value = st.data
+  } finally {
+    loading.value = false
+  }
 }
 
 async function loadShipments() {
@@ -1016,10 +1140,17 @@ async function rejectQuote(q) {
   dashStats.value.pending_quotes = Math.max(0, (dashStats.value.pending_quotes || 1) - 1)
 }
 
+const subscribedConvIds = new Set()
 async function selectConversation(req) {
   selectedRequest.value = req
+  delete unreadCounts[req.id]
+  remoteTyping.value = false
   const { data } = await axios.get(`/sourcing-requests/${req.id}/messages`)
   messages.value = data
+  if (!subscribedConvIds.has(req.id)) {
+    subscribeToConversation(req.id)
+    subscribedConvIds.add(req.id)
+  }
   await nextTick()
   scrollMessages()
 }
@@ -1027,16 +1158,18 @@ async function selectConversation(req) {
 async function sendMessage() {
   if (!newMessage.value.trim() && !chatFile.value || sendingMessage.value) return
   sendingMessage.value = true
+  const socketId = echo.socketId()
+  const socketHeader = socketId ? { 'X-Socket-ID': socketId } : {}
   try {
     let data
     if (chatFile.value) {
       const fd = new FormData()
       if (newMessage.value.trim()) fd.append('body', newMessage.value)
       fd.append('attachment', chatFile.value)
-      const res = await axios.post(`/sourcing-requests/${selectedRequest.value.id}/messages`, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+      const res = await axios.post(`/sourcing-requests/${selectedRequest.value.id}/messages`, fd, { headers: { 'Content-Type': 'multipart/form-data', ...socketHeader } })
       data = res.data
     } else {
-      const res = await axios.post(`/sourcing-requests/${selectedRequest.value.id}/messages`, { body: newMessage.value })
+      const res = await axios.post(`/sourcing-requests/${selectedRequest.value.id}/messages`, { body: newMessage.value }, { headers: socketHeader })
       data = res.data
     }
     messages.value.push(data)
@@ -1052,6 +1185,14 @@ async function sendMessage() {
 
 function scrollMessages() {
   if (messagesEl.value) messagesEl.value.scrollTop = messagesEl.value.scrollHeight
+}
+
+function onTyping() {
+  if (!selectedRequest.value) return
+  clearTimeout(typingEmitTimer)
+  typingEmitTimer = setTimeout(() => {
+    echo.private(`sourcing-request.${selectedRequest.value.id}`).whisper('typing', {})
+  }, 300)
 }
 
 function goToMessages(req) {
@@ -1077,18 +1218,6 @@ function stepReached(status, step) {
   const order = ['pending', 'in_transit', 'customs', 'delivered']
   return order.indexOf(status) >= order.indexOf(step)
 }
-function getProgressPercentage(status) {
-  const order = ['pending', 'in_transit', 'customs', 'delivered']
-  const index = order.indexOf(status)
-  return index === -1 ? 0 : (index / (order.length - 1)) * 100
-}
-function getProgressWidth(status) {
-  const percent = getProgressPercentage(status)
-  // Calculate width as a percentage from left-3.5 to right edge minus 3.5
-  // Approximate: 14px on left (1-2% depending on screen), extends to ~97%
-  const containerPercent = 1.5 + (percent / 100) * 95
-  return `${containerPercent}%`
-}
 function methodLabel(m) {
   return { sea: 'Sea Freight', air: 'Air Freight', express: 'Express' }[m] || m
 }
@@ -1099,7 +1228,7 @@ function docBg(type) {
   return { contract: 'bg-navy-50', license: 'bg-gold-50', inspection_report: 'bg-blue-50', invoice: 'bg-green-50', packing_list: 'bg-purple-50', certificate_of_origin: 'bg-orange-50' }[type] || 'bg-gray-100'
 }
 function docColor(type) {
-  return { contract: 'text-navy-600', license: 'text-gold-500', inspection_report: 'text-blue-500', invoice: 'text-green-500', packing_list: 'text-purple-500', certificate_of_origin: 'text-orange-500' }[type] || 'text-gray-500'
+  return { contract: 'text-navy-600', license: 'text-gold-700', inspection_report: 'text-blue-500', invoice: 'text-green-500', packing_list: 'text-purple-500', certificate_of_origin: 'text-orange-500' }[type] || 'text-gray-500'
 }
 function docTypeLabel(type) {
   return { contract: 'Contract', license: 'License', inspection_report: 'Inspection Report', invoice: 'Invoice', packing_list: 'Packing List / BoL', certificate_of_origin: 'Certificate of Origin', other: 'Other' }[type] || type

@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Events\NewSourcingRequest;
 use App\Models\SourcingRequest;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
@@ -15,8 +16,10 @@ class SourcingRequestController {
         
         // Search
         if ($search = $request->query('search')) {
-            $query->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
         }
         
         // Filters
@@ -63,14 +66,16 @@ class SourcingRequestController {
         $imagePaths = [];
         foreach ($request->file('images', []) as $img) {
             $path = $img->storeAs('uploads/products', Str::uuid().'.'.$img->extension(), 'public');
-            $imagePaths[] = Storage::disk('public')->url($path);
+            $imagePaths[] = $path;
         }
 
         unset($data['images']);
         if ($imagePaths) $data['product_images'] = $imagePaths;
 
         $req = $request->user()->sourcingRequests()->create($data + ['status' => 'submitted']);
-        return response()->json($req->load(['quotes','shipments','documents']), 201);
+        $req->load(['quotes','shipments','documents']);
+        broadcast(new NewSourcingRequest($req));
+        return response()->json($req, 201);
     }
 
     public function show(Request $request, SourcingRequest $sourcingRequest) {

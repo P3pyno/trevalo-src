@@ -6,13 +6,13 @@
         <!-- Brand -->
         <div class="lg:col-span-2">
           <AppLogo text-class="text-white" />
-          <p class="mt-4 text-gray-400 text-sm leading-relaxed max-w-sm">
+          <p class="mt-4 text-gray-500 text-sm leading-relaxed max-w-sm">
             {{ $t('footer.tagline') }}
           </p>
           <div class="flex flex-wrap gap-4 mt-6">
             <a
               href="mailto:info@trivalo-sourcing.com"
-              class="flex items-center gap-2 text-sm text-gray-400 hover:text-gold-400 transition-colors"
+              class="flex items-center gap-2 text-sm text-gray-500 hover:text-gold-400 transition-colors"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -23,7 +23,7 @@
               :href="`https://wa.me/${whatsappNumber}`"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center gap-2 text-sm text-gray-400 hover:text-gold-400 transition-colors"
+              class="flex items-center gap-2 text-sm text-gray-500 hover:text-gold-400 transition-colors"
             >
               <!-- WhatsApp -->
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -33,7 +33,7 @@
             </a>
             <button
               @click="wechatVisible = true"
-              class="flex items-center gap-2 text-sm text-gray-400 hover:text-gold-400 transition-colors"
+              class="flex items-center gap-2 text-sm text-gray-500 hover:text-gold-400 transition-colors"
             >
               <!-- WeChat -->
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -49,7 +49,7 @@
           <h4 class="text-gold-400 font-semibold text-xs tracking-[0.15em] uppercase mb-5">Quick Links</h4>
           <ul class="space-y-3">
             <li v-for="link in navLinks" :key="link.path">
-              <RouterLink :to="link.path" class="text-gray-400 hover:text-white text-sm transition-colors">
+              <RouterLink :to="link.path" class="text-gray-500 hover:text-white text-sm transition-colors">
                 {{ $t(link.key) }}
               </RouterLink>
             </li>
@@ -59,7 +59,7 @@
         <!-- Services -->
         <div>
           <h4 class="text-gold-400 font-semibold text-xs tracking-[0.15em] uppercase mb-5">Services</h4>
-          <ul class="space-y-3 text-sm text-gray-400">
+          <ul class="space-y-3 text-sm text-gray-500">
             <li>Product Sourcing</li>
             <li>Supplier Verification</li>
             <li>Quality Control</li>
@@ -91,7 +91,7 @@
           <p class="text-gray-500 text-sm mb-6">Scan the QR code with WeChat to connect with us.</p>
           <!-- QR code placeholder -->
           <div class="w-48 h-48 mx-auto bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-            <div class="text-center text-gray-400">
+            <div class="text-center text-gray-500">
               <svg class="w-10 h-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75V16.5zM16.5 6.75h.75v.75h-.75v-.75z"/>
@@ -99,7 +99,7 @@
               <span class="text-xs">QR Code Here</span>
             </div>
           </div>
-          <p class="text-gray-400 text-xs mt-4">WeChat ID: <span class="font-medium text-gray-600">trivalo_sourcing</span></p>
+          <p class="text-gray-500 text-xs mt-4">WeChat ID: <span class="font-medium text-gray-600">trivalo_sourcing</span></p>
           <button @click="wechatVisible = false" class="mt-6 btn-primary w-full justify-center text-sm">
             Close
           </button>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\RequestStatusUpdated;
 use App\Models\SourcingRequest;
 use Illuminate\Http\Request;
 
@@ -49,6 +50,7 @@ class AdminRequestController
         ]);
 
         $sourcingRequest->update($data);
+        broadcast(new RequestStatusUpdated($sourcingRequest));
 
         return response()->json($sourcingRequest);
     }

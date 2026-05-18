@@ -6,7 +6,7 @@
         <!-- Header -->
         <div class="text-center mb-8">
           <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gold-50 mb-4">
-            <svg v-if="!loading && verified" class="w-8 h-8 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg v-if="!loading && verified" class="w-8 h-8 text-gold-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
             <svg v-else-if="!loading && error" class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -27,18 +27,23 @@
           <p v-if="loading" class="text-gray-600">
             Please wait while we verify your email address...
           </p>
-          <p v-else-if="verified" class="text-gray-600 mb-4">
-            {{ message || 'Your email has been successfully verified! You can now log in to your account.' }}
+          <p v-else-if="verified" class="text-gray-600 mb-1">
+            Your email is verified! Redirecting you now…
           </p>
           <p v-else class="text-gray-600 mb-4">
             {{ message || 'The verification link is invalid or has expired.' }}
           </p>
+          <div v-if="verified" class="flex justify-center mt-4">
+            <div class="w-2 h-2 bg-gold-400 rounded-full animate-bounce mx-0.5" style="animation-delay: 0ms"></div>
+            <div class="w-2 h-2 bg-gold-400 rounded-full animate-bounce mx-0.5" style="animation-delay: 150ms"></div>
+            <div class="w-2 h-2 bg-gold-400 rounded-full animate-bounce mx-0.5" style="animation-delay: 300ms"></div>
+          </div>
         </div>
 
         <!-- Actions -->
         <div class="space-y-3">
-          <RouterLink v-if="verified" to="/auth?tab=signin" class="w-full btn-primary py-3.5 text-sm text-center">
-            Go to Sign In
+          <RouterLink v-if="verified" to="/onboarding" class="w-full btn-primary py-3.5 text-sm text-center block">
+            Continue to Setup
           </RouterLink>
           <template v-else>
             <RouterLink to="/auth?tab=signup" class="w-full btn-primary py-3.5 text-sm text-center">
@@ -102,9 +107,11 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 
 const loading = ref(true)
 const verified = ref(false)
@@ -124,9 +131,17 @@ onMounted(async () => {
       throw new Error('Invalid verification link')
     }
 
-    const { data } = await axios.get(`/api/auth/verify-email/${id}/${hash}`)
+    const { data } = await axios.get(`/auth/verify-email/${id}/${hash}`, {
+      params: route.query,
+    })
     message.value = data.message
     verified.value = true
+
+    // Auto-login and redirect to onboarding
+    if (data.token && data.user) {
+      authStore.setSession(data.user, data.token)
+      setTimeout(() => router.push('/onboarding'), 1500)
+    }
   } catch (err) {
     error.value = true
     message.value = err?.response?.data?.message || err.message || 'Verification failed'
@@ -141,7 +156,7 @@ async function handleResend() {
   resendSuccess.value = ''
 
   try {
-    const { data } = await axios.post('/api/auth/resend-verification-email', {
+    const { data } = await axios.post('/auth/resend-verification-email', {
       email: resendEmail.value,
     })
     resendSuccess.value = data.message

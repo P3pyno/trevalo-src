@@ -1,8 +1,9 @@
 <template>
   <div>
+    <PageLoader />
     <Navbar v-if="!hideLayout" />
     <main>
-      <Transition name="page-fade" mode="out-in">
+      <Transition name="page-fade">
         <RouterView :key="route.path" />
       </Transition>
     </main>
@@ -17,6 +18,7 @@ import { useRoute } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import FloatingChat from '@/components/FloatingChat.vue'
+import PageLoader from '@/components/PageLoader.vue'
 
 const route = useRoute()
 const hideLayout = computed(() => route.meta.hideLayout === true)
@@ -25,13 +27,10 @@ const hideLayout = computed(() => route.meta.hideLayout === true)
 <style scoped>
 .page-fade-enter-active,
 .page-fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.15s ease;
 }
 
-.page-fade-enter-from {
-  opacity: 0;
-}
-
+.page-fade-enter-from,
 .page-fade-leave-to {
   opacity: 0;
 }

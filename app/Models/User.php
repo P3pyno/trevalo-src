@@ -14,16 +14,17 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
-    protected $fillable = ['name', 'email', 'password', 'company', 'phone', 'country', 'is_admin'];
+    protected $fillable = ['name', 'email', 'password', 'company', 'phone', 'country', 'is_admin', 'onboarding_completed'];
 
     protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'is_admin'          => 'boolean',
+            'email_verified_at'    => 'datetime',
+            'password'             => 'hashed',
+            'is_admin'             => 'boolean',
+            'onboarding_completed' => 'boolean',
         ];
     }
 
@@ -31,6 +32,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function profileFields(): array
     {
-        return $this->only('id', 'name', 'email', 'company', 'phone', 'country', 'is_admin', 'created_at');
+        return $this->only('id', 'name', 'email', 'company', 'phone', 'country', 'is_admin', 'onboarding_completed', 'created_at');
     }
 }

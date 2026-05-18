@@ -22,7 +22,7 @@
               <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-green-400 rounded-full border-2 border-white"></div>
             </div>
             <h2 class="text-xl font-bold text-navy-700">{{ authStore.user?.name }}</h2>
-            <p class="text-gray-400 text-sm mt-1">{{ authStore.user?.email }}</p>
+            <p class="text-gray-500 text-sm mt-1">{{ authStore.user?.email }}</p>
             <div v-if="authStore.user?.company" class="mt-2 inline-flex items-center gap-1.5 bg-navy-50 text-navy-600 text-xs font-medium px-3 py-1 rounded-full">
               <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
@@ -31,19 +31,19 @@
             </div>
             <div class="mt-6 pt-5 border-t border-gray-100 space-y-3 text-left">
               <div v-if="authStore.user?.phone" class="flex items-center gap-2.5 text-sm text-gray-500">
-                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                 </svg>
                 {{ authStore.user.phone }}
               </div>
               <div v-if="authStore.user?.country" class="flex items-center gap-2.5 text-sm text-gray-500">
-                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 {{ authStore.user.country }}
               </div>
               <div class="flex items-center gap-2.5 text-sm text-gray-500">
-                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Member since {{ memberSince }}
@@ -73,7 +73,7 @@
           <!-- Personal Information -->
           <div v-show="activeTab === 'info'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <h3 class="text-lg font-bold text-navy-700 mb-1">Personal Information</h3>
-            <p class="text-gray-400 text-sm mb-7">Update your name, company and contact details.</p>
+            <p class="text-gray-500 text-sm mb-7">Update your name, company and contact details.</p>
 
             <form @submit.prevent="saveProfile" class="space-y-5">
               <div class="grid sm:grid-cols-2 gap-5">
@@ -92,19 +92,19 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
                 <input :value="authStore.user?.email" type="email" disabled
-                  class="w-full rounded-xl border-gray-200 bg-gray-50 text-gray-400 text-sm cursor-not-allowed">
-                <p class="text-xs text-gray-400 mt-1">Email cannot be changed for security reasons.</p>
+                  class="w-full rounded-xl border-gray-200 bg-gray-50 text-gray-500 text-sm cursor-not-allowed">
+                <p class="text-xs text-gray-500 mt-1">Email cannot be changed for security reasons.</p>
               </div>
 
               <div class="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Company <span class="text-gray-400 font-normal">(optional)</span></label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Company <span class="text-gray-500 font-normal">(optional)</span></label>
                   <input v-model="profileForm.company" type="text"
                     class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm"
                     placeholder="Your company name">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone / WhatsApp <span class="text-gray-400 font-normal">(optional)</span></label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone / WhatsApp <span class="text-gray-500 font-normal">(optional)</span></label>
                   <input v-model="profileForm.phone" type="tel"
                     class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm"
                     placeholder="+1 234 567 890">
@@ -112,7 +112,7 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Country <span class="text-gray-400 font-normal">(optional)</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Country <span class="text-gray-500 font-normal">(optional)</span></label>
                 <select v-model="profileForm.country"
                   class="w-full rounded-xl border-gray-200 focus:border-navy-500 focus:ring-navy-500 text-sm">
                   <option value="">Select your country</option>
@@ -145,7 +145,7 @@
           <!-- Security -->
           <div v-show="activeTab === 'security'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <h3 class="text-lg font-bold text-navy-700 mb-1">Change Password</h3>
-            <p class="text-gray-400 text-sm mb-7">Use a strong password with at least 8 characters.</p>
+            <p class="text-gray-500 text-sm mb-7">Use a strong password with at least 8 characters.</p>
 
             <form @submit.prevent="savePassword" class="space-y-5">
               <div>
@@ -202,13 +202,13 @@
           <!-- Danger Zone -->
           <div v-show="activeTab === 'danger'" class="bg-white rounded-2xl shadow-sm border border-red-100 p-8">
             <h3 class="text-lg font-bold text-red-600 mb-1">Danger Zone</h3>
-            <p class="text-gray-400 text-sm mb-7">Permanent actions that cannot be undone.</p>
+            <p class="text-gray-500 text-sm mb-7">Permanent actions that cannot be undone.</p>
 
             <div class="border border-red-100 rounded-xl p-6">
               <div class="flex items-start justify-between gap-6">
                 <div>
                   <h4 class="font-semibold text-gray-800">Delete Account</h4>
-                  <p class="text-gray-400 text-sm mt-1">Permanently delete your account and all associated data. This action cannot be reversed.</p>
+                  <p class="text-gray-500 text-sm mt-1">Permanently delete your account and all associated data. This action cannot be reversed.</p>
                 </div>
                 <button @click="deleteConfirm = true"
                   class="flex-shrink-0 px-5 py-2 text-sm font-semibold text-red-600 border border-red-200 rounded-xl hover:bg-red-50 transition-colors">

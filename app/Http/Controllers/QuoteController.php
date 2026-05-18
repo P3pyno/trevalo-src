@@ -9,15 +9,17 @@ class QuoteController {
     public function index(Request $request) {
         $ids = $request->user()->sourcingRequests()->pluck('id');
         
-        $query = Quote::whereIn('sourcing_request_id', $ids)->with('sourcingRequest');
+        $query = Quote::whereIn('sourcing_request_id', $ids)->with(['sourcingRequest', 'supplier:id,supplier_code']);
         
         // Pagination
         $perPage = $request->query('per_page', 15);
         
         // Search
         if ($search = $request->query('search')) {
-            $query->where('supplier_name', 'like', "%{$search}%")
-                  ->orWhere('notes', 'like', "%{$search}%");
+            $query->where(function ($query) use ($search) {
+                $query->where('supplier_name', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%");
+            });
         }
         
         // Filters

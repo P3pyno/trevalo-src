@@ -25,7 +25,6 @@ class AdminDocumentController {
         $file = $request->file('file');
         $name = $data['name'] ?: $file->getClientOriginalName();
         $path = $file->storeAs('uploads/documents', Str::uuid().'.'.$file->extension(), 'public');
-        $url  = Storage::disk('public')->url($path);
 
         $doc = Document::create([
             'user_id'             => $request->user()->id,
@@ -33,7 +32,6 @@ class AdminDocumentController {
             'name'                => $name,
             'type'                => $data['type'],
             'file_path'           => $path,
-            'url'                 => $url,
             'size'                => $file->getSize(),
         ]);
 

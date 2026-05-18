@@ -45,10 +45,22 @@ const routes = [
     meta: { title: 'Verify Email — Trivalo Sourcing', hideLayout: true },
   },
   {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: () => import('@/pages/ResetPassword.vue'),
+    meta: { title: 'Reset Password — Trivalo Sourcing', hideLayout: true, guestOnly: true },
+  },
+  {
     path: '/quote',
     name: 'quote',
     component: () => import('@/pages/Quote.vue'),
     meta: { title: 'Get a Quote — Trivalo Sourcing' },
+  },
+  {
+    path: '/onboarding',
+    name: 'onboarding',
+    component: () => import('@/pages/Onboarding.vue'),
+    meta: { title: 'Welcome — Trivalo Sourcing', hideLayout: true, requiresAuth: true },
   },
   {
     path: '/dashboard',
@@ -96,6 +108,17 @@ router.beforeEach((to) => {
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { name: 'auth', query: { redirect: to.fullPath } }
+  }
+
+  // Redirect new users who haven't completed onboarding
+  if (
+    auth.isAuthenticated &&
+    !auth.user?.is_admin &&
+    !auth.user?.onboarding_completed &&
+    to.name !== 'onboarding' &&
+    to.name !== 'verify-email'
+  ) {
+    return { name: 'onboarding' }
   }
 
   if (to.meta.requiresAdmin && !auth.user?.is_admin) {

@@ -21,9 +21,9 @@
           <div v-for="quote in pendingQuotes" :key="quote.id"
             class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-move group">
             <div class="text-sm font-semibold text-navy-700">{{ quote.supplier_name }}</div>
-            <div class="text-xs text-gray-500 mt-1">{{ quote.notes?.substring(0, 50) }}...</div>
+            <div class="text-xs text-gray-500 mt-1">{{ quote.notes?.substring(0, 50) || 'No notes' }}</div>
             <div class="flex items-center justify-between mt-3">
-              <div class="text-sm font-bold text-gold-500">${{ parseFloat(quote.total_price).toFixed(2) }}</div>
+              <div class="text-xs text-gray-500">MOQ: <span class="font-semibold text-navy-700">{{ quote.moq }} units</span></div>
               <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button @click="approveQuote(quote.id)"
                   class="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
@@ -38,7 +38,7 @@
               </div>
             </div>
           </div>
-          <div v-if="pendingQuotes.length === 0" class="text-center py-8 text-gray-400">
+          <div v-if="pendingQuotes.length === 0" class="text-center py-8 text-gray-500">
             <p class="text-sm">No pending quotes</p>
           </div>
         </div>
@@ -56,10 +56,14 @@
           <div v-for="quote in approvedQuotes" :key="quote.id"
             class="bg-white rounded-xl p-4 shadow-sm border border-green-200 hover:shadow-md transition-shadow">
             <div class="text-sm font-semibold text-navy-700">{{ quote.supplier_name }}</div>
-            <div class="text-xs text-gray-500 mt-1">Lead time: {{ quote.lead_time }} days</div>
-            <div class="text-sm font-bold text-green-600 mt-3">${{ parseFloat(quote.total_price).toFixed(2) }}</div>
+            <div class="text-xs text-gray-500 mt-1">Lead time: {{ quote.lead_time }}</div>
+            <a v-if="quote.quote_file_path" :href="`/storage/${quote.quote_file_path}`" target="_blank"
+              class="inline-flex items-center gap-1 text-xs font-medium text-navy-600 hover:text-navy-800 mt-2">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              View File
+            </a>
           </div>
-          <div v-if="approvedQuotes.length === 0" class="text-center py-8 text-gray-400">
+          <div v-if="approvedQuotes.length === 0" class="text-center py-8 text-gray-500">
             <p class="text-sm">No approved quotes</p>
           </div>
         </div>
@@ -77,10 +81,9 @@
           <div v-for="quote in rejectedQuotes" :key="quote.id"
             class="bg-white rounded-xl p-4 shadow-sm border border-red-200 hover:shadow-md transition-shadow opacity-60">
             <div class="text-sm font-semibold text-gray-600">{{ quote.supplier_name }}</div>
-            <div class="text-xs text-gray-400 mt-1">Rejected</div>
-            <div class="text-sm font-bold text-red-600 mt-3">${{ parseFloat(quote.total_price).toFixed(2) }}</div>
+            <div class="text-xs text-gray-500 mt-1">Rejected · Lead time: {{ quote.lead_time }}</div>
           </div>
-          <div v-if="rejectedQuotes.length === 0" class="text-center py-8 text-gray-400">
+          <div v-if="rejectedQuotes.length === 0" class="text-center py-8 text-gray-500">
             <p class="text-sm">No rejected quotes</p>
           </div>
         </div>

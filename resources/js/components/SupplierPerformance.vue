@@ -42,7 +42,7 @@
               </div>
             </td>
             <td class="px-6 py-4">
-              <div class="font-bold text-gold-500">${{ supplier.avg_price.toFixed(2) }}</div>
+              <div class="font-bold text-gold-700">${{ supplier.avg_price.toFixed(2) }}</div>
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center gap-1">

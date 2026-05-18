@@ -47,7 +47,7 @@
 
         <div>
           <h2 class="text-xl font-bold text-navy-700 mb-3">8. Contact</h2>
-          <p>Questions about these terms? Email us at <a href="mailto:info@trivalo-sourcing.com" class="text-gold-600 hover:underline">info@trivalo-sourcing.com</a>.</p>
+          <p>Questions about these terms? Email us at <a href="mailto:info@trivalo-sourcing.com" class="text-gold-700 hover:underline">info@trivalo-sourcing.com</a>.</p>
         </div>
 
       </div>

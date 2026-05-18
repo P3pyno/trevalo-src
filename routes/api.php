@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactController;
@@ -18,36 +19,42 @@ use App\Http\Controllers\Admin\AdminQuoteController;
 use App\Http\Controllers\Admin\AdminShipmentController;
 use App\Http\Controllers\Admin\AdminMessageController;
 use App\Http\Controllers\Admin\AdminDocumentController;
+use App\Http\Controllers\Admin\AdminSupplierController;
 
 Route::post('/contact', [ContactController::class, 'send'])->middleware('throttle:10,1');
 
 Route::prefix('auth')->middleware('throttle:20,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login',    [AuthController::class, 'login']);
-    Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->middleware('throttle:3,10');
 });
 
 // Email verification route (public, uses signed URL)
-Route::get('/auth/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+Route::get('/auth/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware('signed')
+    ->name('verification.verify');
 
 // Email monitoring endpoints (for development/testing - local environment only)
-Route::prefix('debug/email')
-    ->middleware(function ($request, $next) {
-        if (!app()->environment('local')) {
-            return response()->json(['error' => 'Not available in this environment'], 403);
-        }
-        return $next($request);
-    })
-    ->group(function () {
+if (app()->environment('local')) {
+    Route::prefix('debug/email')->group(function () {
         Route::get('/logs', [EmailMonitorController::class, 'logs']);
         Route::get('/status/{email}', [EmailMonitorController::class, 'status']);
         Route::get('/test-users', [EmailMonitorController::class, 'testUsers']);
     });
+}
+
+// Broadcasting channel authentication (Sanctum token auth)
+Route::post('/broadcasting/auth', function (Illuminate\Http\Request $request) {
+    return Broadcast::auth($request);
+})->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Auth
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::get('/auth/me',      [AuthController::class, 'me']);
+    Route::post('/auth/logout',     [AuthController::class, 'logout']);
+    Route::get('/auth/me',          [AuthController::class, 'me']);
+    Route::post('/onboarding',      [AuthController::class, 'completeOnboarding']);
 
     // User profile
     Route::get('/user',           [UserController::class, 'show']);
@@ -104,7 +111,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'isAdmin'])->group(function 
 
     Route::get('/quotes',            [AdminQuoteController::class, 'index']);
     Route::post('/quotes',           [AdminQuoteController::class, 'store']);
-    Route::put('/quotes/{quote}',    [AdminQuoteController::class, 'update']);
+    Route::match(['put', 'post'], '/quotes/{quote}', [AdminQuoteController::class, 'update']);
     Route::delete('/quotes/{quote}', [AdminQuoteController::class, 'destroy']);
 
     Route::get('/shipments',              [AdminShipmentController::class, 'index']);
@@ -114,6 +121,11 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'isAdmin'])->group(function 
     Route::get('/documents',                 [AdminDocumentController::class, 'index']);
     Route::post('/documents',                [AdminDocumentController::class, 'store']);
     Route::delete('/documents/{document}',   [AdminDocumentController::class, 'destroy']);
+
+    Route::get('/suppliers',               [AdminSupplierController::class, 'index']);
+    Route::post('/suppliers',              [AdminSupplierController::class, 'store']);
+    Route::put('/suppliers/{supplier}',    [AdminSupplierController::class, 'update']);
+    Route::delete('/suppliers/{supplier}', [AdminSupplierController::class, 'destroy']);
 
     Route::get('/messages',                                                      [AdminMessageController::class, 'threads']);
     Route::get('/sourcing-requests/{sourcingRequest}/messages',                  [AdminMessageController::class, 'index']);

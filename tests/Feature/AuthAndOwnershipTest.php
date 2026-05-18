@@ -37,9 +37,37 @@ class AuthAndOwnershipTest extends TestCase
             'verification.verify',
             now()->addMinutes(30),
             ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())],
+            absolute: false,
         );
 
         $this->getJson($url)
+            ->assertOk()
+            ->assertJsonPath('verified', true);
+
+        $this->assertNotNull($user->fresh()->email_verified_at);
+    }
+
+    public function test_relative_verification_signature_from_frontend_link_marks_email_as_verified(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $signedApiPath = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(30),
+            ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())],
+            absolute: false,
+        );
+
+        $frontendUrl = preg_replace('#^/api/auth/verify-email/#', '/verify-email/', $signedApiPath);
+        $frontendQuery = parse_url($frontendUrl, PHP_URL_QUERY);
+        parse_str($frontendQuery, $query);
+
+        $apiUrl = "/api/auth/verify-email/{$user->id}/"
+            .sha1($user->getEmailForVerification())
+            .'?'
+            .http_build_query($query);
+
+        $this->getJson($apiUrl)
             ->assertOk()
             ->assertJsonPath('verified', true);
 

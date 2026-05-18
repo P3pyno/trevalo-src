@@ -29,7 +29,7 @@
             <p>Thank you for registering with Trivalo Sourcing. To complete your registration and access your account, please verify your email address by clicking the button below.</p>
             
             <center>
-                <a href="{{ $verificationUrl }}" class="button">Verify Email Address</a>
+                <a href="{{ $verificationUrl }}" class="button" target="_blank" rel="noopener" style="display: inline-block; padding: 14px 32px; background-color: #d97706; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 30px 0;">Verify Email Address</a>
             </center>
             
             <p>This verification link will expire in <span class="expires">24 hours</span>.</p>
@@ -38,7 +38,7 @@
             
             <p style="color: #94a3b8; font-size: 13px;">
                 <strong>Or copy this link in your browser:</strong><br>
-                {{ $verificationUrl }}
+                <a href="{{ $verificationUrl }}" target="_blank" rel="noopener" style="color: #d97706; word-break: break-all;">{{ $verificationUrl }}</a>
             </p>
         </div>
         

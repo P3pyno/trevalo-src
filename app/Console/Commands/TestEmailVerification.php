@@ -84,14 +84,24 @@ class TestEmailVerification extends Command
             $duration = round((microtime(true) - $startTime) * 1000, 2);
             $this->line("<info>✓</info> Email sent successfully ({$duration}ms)");
 
-            // Generate verification URL
-            $verificationUrl = \Illuminate\Support\Facades\URL::signedRoute(
+            // Generate the same frontend verification URL used by the email. The signature is
+            // intentionally relative so the SPA can forward it to the /api endpoint.
+            $signedVerificationPath = \Illuminate\Support\Facades\URL::temporarySignedRoute(
                 'verification.verify',
+                now()->addHours(24),
                 [
                     'id' => $user->id,
                     'hash' => sha1($user->getEmailForVerification()),
-                ]
+                ],
+                absolute: false,
             );
+            $signedPath = parse_url($signedVerificationPath, PHP_URL_PATH) ?: '';
+            $signedQuery = parse_url($signedVerificationPath, PHP_URL_QUERY) ?: '';
+            $frontendBaseUrl = rtrim((string) env('FRONTEND_URL', config('app.url')), '/');
+            $frontendPath = preg_replace('#^/api/auth/verify-email/#', '/verify-email/', $signedPath) ?: $signedPath;
+            $verificationUrl = $frontendBaseUrl
+                .$frontendPath
+                .($signedQuery !== '' ? '?'.$signedQuery : '');
 
             $this->info("\nVerification URL:");
             $this->line("<comment>$verificationUrl</comment>");

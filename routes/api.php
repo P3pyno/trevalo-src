@@ -33,7 +33,7 @@ Route::prefix('auth')->middleware('throttle:20,1')->group(function () {
 
 // Email verification route (public, uses signed URL)
 Route::get('/auth/verify-email/{id}/{hash}', [AuthController::class, 'verifyEmail'])
-    ->middleware('signed')
+    ->middleware('signed:relative')
     ->name('verification.verify');
 
 // Email monitoring endpoints (for development/testing - local environment only)

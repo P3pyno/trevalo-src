@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Events\ShipmentUpdated;
+use App\Http\Controllers\Controller;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
 
-class AdminShipmentController
+class AdminShipmentController extends Controller
 {
     public function index(Request $request)
     {

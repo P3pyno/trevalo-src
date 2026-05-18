@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Events\RequestStatusUpdated;
+use App\Http\Controllers\Controller;
 use App\Models\SourcingRequest;
 use Illuminate\Http\Request;
 
-class AdminRequestController
+class AdminRequestController extends Controller
 {
     private const VALID_STATUSES = [
         'submitted', 'in_progress', 'quoted', 'confirmed',

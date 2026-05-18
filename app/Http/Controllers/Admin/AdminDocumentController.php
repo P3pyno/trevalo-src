@@ -1,11 +1,12 @@
 <?php
 namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class AdminDocumentController {
+class AdminDocumentController extends Controller {
     public function index() {
         return response()->json(
             Document::with(['sourcingRequest:id,title,user_id','sourcingRequest.user:id,name','user:id,name'])

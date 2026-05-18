@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class DocumentController {
+class DocumentController extends Controller {
     public function index(Request $request) {
         $ids = $request->user()->sourcingRequests()->pluck('id');
         return response()->json(

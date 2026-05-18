@@ -1,11 +1,12 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Events\MessageSent;
+use App\Http\Controllers\Controller;
 use App\Models\SourcingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class AdminMessageController {
+class AdminMessageController extends Controller {
     public function threads() {
         return response()->json(
             SourcingRequest::has('messages')

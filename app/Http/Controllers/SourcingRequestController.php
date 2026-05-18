@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class SourcingRequestController {
+class SourcingRequestController extends Controller {
     public function index(Request $request) {
         $query = $request->user()->sourcingRequests()->with(['quotes','shipments','documents']);
         

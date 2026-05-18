@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\ContactFormMail;
 
-class ContactController
+class ContactController extends Controller
 {
     public function send(Request $request)
     {

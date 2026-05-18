@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use App\Models\ActivityLog;
 use Carbon\Carbon;
 
-class DashboardController {
+class DashboardController extends Controller {
     public function stats(Request $request) {
         $user = $request->user();
         $requests = $user->sourcingRequests();

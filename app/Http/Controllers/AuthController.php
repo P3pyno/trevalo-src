@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Support\Str;
 
-class AuthController
+class AuthController extends Controller
 {
     public function register(Request $request)
     {

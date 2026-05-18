@@ -5,7 +5,7 @@ use App\Models\SourcingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class MessageController {
+class MessageController extends Controller {
     public function index(Request $request, SourcingRequest $sourcingRequest) {
         if ($sourcingRequest->user_id !== $request->user()->id) abort(403);
         return response()->json($sourcingRequest->messages()->with('user')->get());

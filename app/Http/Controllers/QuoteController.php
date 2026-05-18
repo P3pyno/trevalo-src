@@ -5,7 +5,7 @@ use App\Models\SourcingRequest;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
-class QuoteController {
+class QuoteController extends Controller {
     public function index(Request $request) {
         $ids = $request->user()->sourcingRequests()->pluck('id');
         

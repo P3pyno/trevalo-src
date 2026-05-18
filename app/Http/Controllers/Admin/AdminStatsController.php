@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Quote;
 use App\Models\Shipment;
 use App\Models\SourcingRequest;
 use App\Models\User;
 
-class AdminStatsController
+class AdminStatsController extends Controller
 {
     public function index()
     {

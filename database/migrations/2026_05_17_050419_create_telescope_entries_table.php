@@ -6,19 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Get the migration connection name.
-     */
     public function getConnection(): ?string
     {
         return config('telescope.storage.database.connection');
     }
 
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        if (! class_exists(\Laravel\Telescope\Telescope::class)) {
+            return;
+        }
+
         $schema = Schema::connection($this->getConnection());
 
         $schema->create('telescope_entries', function (Blueprint $table) {

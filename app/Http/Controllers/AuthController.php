@@ -91,7 +91,7 @@ class AuthController
 
     public function verifyEmail(Request $request, $id, $hash)
     {
-        if (!$request->hasValidSignature()) {
+        if (!$request->hasValidSignature(false)) {
             return response()->json(['message' => 'Invalid or expired verification link.'], 403);
         }
 
